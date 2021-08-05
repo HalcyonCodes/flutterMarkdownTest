@@ -5,10 +5,29 @@ import 'package:markdown/markdown.dart' as md;
 import '../style/styleSheet.dart';
 
 class TextWidget extends StatefulWidget {
+  double paddingTop = 0.0;
+  double paddingBottom = 0.0;
+  double paddingLeft = 0.0;
+  double paddingright = 0.0;
+
+  double marginTop = 0.0;
+  double marginBottom = 0.0;
+  double marginLeft = 0.0;
+  double marginright = 0.0;
+  bool isFirst;
   List<WidgetSpan> texts = [];
   md.Element e;
   StyleSheet st;
-  TextWidget({required this.e, required this.st}) {
+  TextWidget({required this.e, required this.st, required this.isFirst}) {
+    paddingTop = 0.0;
+    paddingBottom = 0.0;
+    paddingLeft = 0.0;
+    paddingright = 0.0;
+
+    marginTop = 0.0;
+    marginBottom = 0.0;
+    marginLeft = 0.0;
+    marginright = 0.0;
     TextNodeVisitor tVisitor = TextNodeVisitor(st: st);
     tVisitor.visit(e.children);
     texts = tVisitor.textSpans;
@@ -26,9 +45,88 @@ class _TextWidgetState extends State<TextWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(children: widget.texts),
+    decoration();
+    return Container(
+      alignment: Alignment.topLeft,
+      margin: EdgeInsets.only(
+        top: widget.marginTop,
+        left: widget.marginLeft,
+        right: widget.marginright,
+        bottom: widget.marginBottom,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            alignment: Alignment.topLeft,
+            padding: EdgeInsets.only(
+                bottom: widget.paddingBottom,
+                top: widget.paddingTop,
+                left: widget.paddingLeft,
+                right: widget.paddingright),
+            child: RichText(
+              softWrap: false,
+              textAlign: TextAlign.start,
+              text: TextSpan(children: widget.texts),
+            ),
+          ),
+          if (widget.e.tag == 'h1' || widget.e.tag == 'h2')
+            Divider(
+              height: 0.0,
+              indent: 0.0,
+              color: Colors.black.withOpacity(0.10),
+              thickness: 0.7,
+            )
+        ],
+      ),
     );
+  }
+
+  void decoration() {
+    switch (widget.e.tag) {
+      case 'h1':
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 31.5;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 9;
+        }
+        break;
+      case 'h2':
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 24.5;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 9;
+        }
+        break;
+      case 'h3':
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 21;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 0;
+        }
+        break;
+      case 'h4':
+        {}
+        break;
+      case 'h5':
+        {}
+        break;
+      case 'h6':
+        {}
+        break;
+    }
   }
 }
 
@@ -98,6 +196,7 @@ class TextNodeVisitor implements md.NodeVisitor {
       child: Text(
         text.text,
         style: CurrentStyle,
+        //textAlign: TextAlign.start,
       ),
       onTap: tagAOntap,
       onHover: tagAOnhover,

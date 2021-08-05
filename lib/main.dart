@@ -64,8 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
             ),
-            Column(
-              children: bWidgets,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: bWidgets,
+              ),
             )
           ],
         ),

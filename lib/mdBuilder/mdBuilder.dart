@@ -41,50 +41,92 @@ class MdBuilder implements md.NodeVisitor {
     switch (e.tag) {
       case 'p':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.normalStyle;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h1':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h1;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h2':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h2;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h3':
         {
+           bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h3;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h4':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h4;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h5':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h5;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;
       case 'h6':
         {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h6;
-          Widget textWidget = TextWidget(e: e, st: styleSheet!,);
+          Widget textWidget = TextWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+          );
           bWidgets.add(textWidget);
         }
         break;

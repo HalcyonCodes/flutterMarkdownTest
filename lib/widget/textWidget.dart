@@ -15,7 +15,7 @@ class TextWidget extends StatefulWidget {
   double marginLeft = 0.0;
   double marginright = 0.0;
   bool isFirst;
-  List<WidgetSpan> texts = [];
+  List<TextSpan> texts = [];
   md.Element e;
   StyleSheet st;
   TextWidget({required this.e, required this.st, required this.isFirst}) {
@@ -65,7 +65,6 @@ class _TextWidgetState extends State<TextWidget> {
                 left: widget.paddingLeft,
                 right: widget.paddingright),
             child: RichText(
-              softWrap: false,
               textAlign: TextAlign.start,
               text: TextSpan(children: widget.texts),
             ),
@@ -118,13 +117,37 @@ class _TextWidgetState extends State<TextWidget> {
         }
         break;
       case 'h4':
-        {}
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 17.500;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 0;
+        }
         break;
       case 'h5':
-        {}
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 14;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 0;
+        }
         break;
       case 'h6':
-        {}
+        {
+          if (widget.isFirst) {
+            widget.marginTop = 0;
+          } else {
+            widget.marginTop = 14;
+          }
+          widget.marginBottom = 16;
+          widget.paddingBottom = 0;
+        }
         break;
     }
   }
@@ -140,7 +163,9 @@ class TextNodeVisitor implements md.NodeVisitor {
   List<TextStyle> styleTemps = [];
   TextStyle? CurrentStyle;
 
-  List<WidgetSpan> textSpans = [];
+  List<TextSpan> textSpans = [];
+
+  TapGestureRecognizer? tapGes = null;
 
   Function()? tagAOntap;
 
@@ -164,10 +189,13 @@ class TextNodeVisitor implements md.NodeVisitor {
 
     if (element.tag == 'a') {
       isInTagA = true;
+      tapGes = TapGestureRecognizer();
+
       tagAOntap = () {
         //打开链接代码
         print(element.tag);
       };
+      tapGes!..onTap = tagAOntap;
     }
 
     if (element.children != null) {
@@ -185,22 +213,15 @@ class TextNodeVisitor implements md.NodeVisitor {
 
   @override
   void visitText(md.Text text) {
-    if (isInTagA == false) tagAOntap = null;
-    WidgetSpan temp = WidgetSpan(
-        child: InkWell(
-      //splashFactory: ,
-      radius: 0,
-      splashColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      child: Text(
-        text.text,
-        style: CurrentStyle,
-        //textAlign: TextAlign.start,
-      ),
-      onTap: tagAOntap,
-      onHover: tagAOnhover,
-    ));
+    if (isInTagA == false) {
+      tapGes = null;
+    }
+    TextSpan temp = TextSpan(
+      text: text.text,
+      style: CurrentStyle,
+      recognizer: tapGes,
+    );
+
     textSpans.add(temp);
   }
 

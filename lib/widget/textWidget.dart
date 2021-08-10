@@ -31,6 +31,7 @@ class TextWidget extends StatefulWidget {
     TextNodeVisitor tVisitor = TextNodeVisitor(st: st);
     tVisitor.visit(e.children);
     texts = tVisitor.textSpans;
+    st.fatherTextStyle = st.normalStyle;
   }
 
   @override
@@ -42,6 +43,8 @@ class _TextWidgetState extends State<TextWidget> {
   void initState() {
     super.initState();
   }
+
+  //md.Element? eTemp;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +76,7 @@ class _TextWidgetState extends State<TextWidget> {
             Divider(
               height: 0.0,
               indent: 0.0,
-              color: Colors.black.withOpacity(0.10),
+              color: Colors.black.withOpacity(0.20),
               thickness: 0.7,
             )
         ],
@@ -82,7 +85,19 @@ class _TextWidgetState extends State<TextWidget> {
   }
 
   void decoration() {
+    //eTemp = de;
     switch (widget.e.tag) {
+      case 'li':
+        {
+          /* DecorationVisitor dv = DecorationVisitor();
+          if (de.children != null) {
+            if (de.runtimeType == md.Element) {
+              de.children![0].accept(dv);
+              decoration(dv.dve!);
+            }
+          }*/
+        }
+        break;
       case 'h1':
         {
           if (widget.isFirst) {
@@ -185,8 +200,7 @@ class TextNodeVisitor implements md.NodeVisitor {
 
   @override
   bool visitElementBefore(md.Element element) {
-    //styleTemps.add(st.fatherTextStyle!);
-
+    if (element.tag == 'ul') return false;
     if (element.tag == 'a') {
       isInTagA = true;
       tapGes = TapGestureRecognizer();
@@ -207,7 +221,6 @@ class TextNodeVisitor implements md.NodeVisitor {
     }
     CurrentStyle = styleTemps.last;
     st.fatherTextStyle = CurrentStyle;
-    //isTagA = false;
     return false; //为false时不解析子节点的text节点
   }
 
@@ -228,6 +241,13 @@ class TextNodeVisitor implements md.NodeVisitor {
   TextStyle styleSelect(String tag) {
     switch (tag) {
       case 'p':
+        {
+          st.setStyleSheet();
+          TextStyle t = st.normalStyle;
+          st.fatherTextStyle = t;
+          return t;
+        }
+      case 'li':
         {
           st.setStyleSheet();
           TextStyle t = st.normalStyle;
@@ -307,4 +327,21 @@ class TextNodeVisitor implements md.NodeVisitor {
     }
     return st.normalStyle;
   }
+}
+
+class DecorationVisitor implements md.NodeVisitor {
+  md.Element? dve;
+
+  @override
+  void visitElementAfter(md.Element element) {}
+
+  @override
+  bool visitElementBefore(md.Element element) {
+    dve = element;
+
+    return false;
+  }
+
+  @override
+  void visitText(md.Text text) {}
 }

@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 class StyleSheet {
   TextStyle? fatherTextStyle;
-  
-  void setStyleSheet(){
+
+  void setStyleSheet() {
     a = fatherTextStyle!.copyWith(
       color: Color.fromRGBO(65, 131, 196, 1.0),
     );
 
     aHover = fatherTextStyle!.copyWith(
-    color: Color.fromRGBO(51, 153, 255, 1.0),
-  );
+      color: Color.fromRGBO(51, 153, 255, 1.0),
+    );
 
-   em = fatherTextStyle!.copyWith(
-    fontStyle: FontStyle.italic,
-  );
+    em = fatherTextStyle!.copyWith(
+      fontStyle: FontStyle.italic,
+    );
 
-   strong = fatherTextStyle!.copyWith(
-    fontWeight: FontWeight.w700,
-  );
+    strong = fatherTextStyle!.copyWith(
+      fontWeight: FontWeight.w700,
+    );
 
-   del = fatherTextStyle!.copyWith(
-    decoration: TextDecoration.lineThrough,
-  );
+    del = fatherTextStyle!.copyWith(
+      decoration: TextDecoration.lineThrough,
+    );
   }
 
   TextStyle normalStyle = TextStyle(
@@ -68,7 +68,7 @@ class StyleSheet {
   TextStyle h4 = TextStyle(
     fontSize: 17.5,
     fontWeight: FontWeight.w700,
-    height: 1.4,   
+    height: 1.4,
     color: Colors.black,
     decoration: TextDecoration.none,
     package: 'md_fditor',
@@ -86,22 +86,32 @@ class StyleSheet {
   );
 
   TextStyle h6 = TextStyle(
-      fontSize: 14,
-      fontWeight: FontWeight.w700,
-      height: 1.4,
-      color: Color.fromRGBO(119, 119, 119, 1.0),
-      decoration: TextDecoration.none,
-      package: 'md_fditor',
-      fontFamily: 'YAHEI',
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    height: 1.4,
+    color: Color.fromRGBO(119, 119, 119, 1.0),
+    decoration: TextDecoration.none,
+    package: 'md_fditor',
+    fontFamily: 'YAHEI',
+  );
+
+  TextStyle li = TextStyle(
+    fontSize: 14,
+    color: Colors.black,
+    decoration: TextDecoration.none,
+    fontWeight: FontWeight.normal,
+    height: 1.6,
+    package: 'md_fditor',
+    fontFamily: 'YAHEI',
   );
 
   TextStyle? a;
 
-  TextStyle? aHover ;
+  TextStyle? aHover;
 
-  TextStyle? em ;
+  TextStyle? em;
 
-  TextStyle? strong ;
+  TextStyle? strong;
 
-  TextStyle? del ;
+  TextStyle? del;
 }

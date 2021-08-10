@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
-//import 'package:test/md_fditor.dart';
 import '../style/styleSheet.dart';
 import '../parse/parse.dart';
-import '../widget/textWidget.dart';
 import 'package:markdown/markdown.dart' as md;
+import '../widget/textWidget.dart';
+import '../widget/listWidget.dart';
 
 class MdBuilder implements md.NodeVisitor {
   String data;
+  double width;
   List<md.Node>? astNodes;
   List<Widget> bWidgets = [];
   StyleSheet? styleSheet;
 
-  MdBuilder({required this.data}) {
+  MdBuilder({required this.width, required this.data}) {
     styleSheet = StyleSheet();
     Parse parse = Parse(data: data);
     astNodes = parse.astNodes();
@@ -29,7 +30,7 @@ class MdBuilder implements md.NodeVisitor {
   @override
   bool visitElementBefore(md.Element element) {
     blockSelect(element);
-    return true;
+    return false;
   }
 
   @override
@@ -80,7 +81,7 @@ class MdBuilder implements md.NodeVisitor {
         break;
       case 'h3':
         {
-           bool isFirst = false;
+          bool isFirst = false;
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h3;
           Widget textWidget = TextWidget(
@@ -128,6 +129,20 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+        }
+        break;
+      case 'ul':
+        {
+          bool isFirst = false;
+          if (bWidgets.length == 0) isFirst = true;
+          styleSheet!.fatherTextStyle = styleSheet!.normalStyle;
+          Widget listWidget = ListWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+            width: width,
+          );
+          bWidgets.add(listWidget);
         }
         break;
     }

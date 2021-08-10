@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './md_fditor.dart';
+import 'fditorPreview.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Widget> bWidgets = [];
   TextEditingController td = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,19 +58,17 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.red,
               child: InkWell(
                 onTap: () {
-                  Fditor d = Fditor(data: td.text);
-                  d.MarkdownToWidget();
-                  bWidgets = d.bWidgets;
                   setState(() {});
                 },
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 30),
-              child: Column(
-                children: bWidgets,
-              ),
-            )
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: Container(
+                  //height: 600,
+                  width: 600,
+                  child: FditorPreview(data: td.text),
+                ))
           ],
         ),
       ),

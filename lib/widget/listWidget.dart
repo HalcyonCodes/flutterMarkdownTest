@@ -41,11 +41,14 @@ class _ListWidgetState extends State<ListWidget> {
   }
 
   void bulidByMap() {
-    String tagTemp = 'p';
-    Widget? decorationWidget;
+    String tagTemp;
+    Widget decorationWidget;
     double spaceCount = 0;
+    DecorationVisitor dVisiter = DecorationVisitor();
 
     widget.map!.forEach((key, value) {
+      tagTemp = 'p';
+      decorationWidget = SizedBox();
       if (widdgets.length != 0) widget.isFirst = false;
       List<String> temp = key.split('_');
       int length = temp.length - 2;
@@ -182,84 +185,75 @@ class _ListWidgetState extends State<ListWidget> {
         text: TextSpan(children: rowTemp),
       );
       if (value.children != null) {
-        DecorationVisitor dVisiter = DecorationVisitor();
         value.children![0].accept(dVisiter);
         if (dVisiter.dve != null) {
           tagTemp = dVisiter.dve!.tag;
+        } else {
+          tagTemp = 'p';
         }
       }
 
-      switch (tagTemp) {
-        case 'h1':
-          {
-            decorationWidget = Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!widget.isFirst)
-                  SizedBox(
-                    height: 31.5,
-                  ),
-                Row(
-                  children: [row],
-                ),
-                SizedBox(
-                  height: 9,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 28.00 * spaceCount),
-                  child: Divider(
-                    height: 0.0,
-                    indent: 0.0,
-                    color: Colors.black.withOpacity(0.20),
-                    thickness: 0.7,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                )
-              ],
-            );
-          }
-          break;
-        case 'h2':
-          {
-            decorationWidget = Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!widget.isFirst)
-                  SizedBox(
-                    height: 31.5,
-                  ),
-                Row(
-                  children: [row],
-                ),
-                SizedBox(
-                  height: 9,
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 28.00 * spaceCount),
-                  child: Divider(
-                    height: 0.0,
-                    indent: 0.0,
-                    color: Colors.black.withOpacity(0.20),
-                    thickness: 0.7,
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                )
-              ],
-            );
-          }
-          break;
-        default:
-          {
-            decorationWidget = row;
-          }
-          break;
+      if (tagTemp == 'h1') {
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: 31.5,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: 9,
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 28.00 * spaceCount),
+              child: Divider(
+                height: 0.0,
+                indent: 0.0,
+                color: Colors.black.withOpacity(0.20),
+                thickness: 0.7,
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            )
+          ],
+        );
+      } else if (tagTemp == 'h2') {
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: 31.5,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: 9,
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 28.00 * spaceCount),
+              child: Divider(
+                height: 0.0,
+                indent: 0.0,
+                color: Colors.black.withOpacity(0.20),
+                thickness: 0.7,
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            )
+          ],
+        );
+      } else {
+        decorationWidget = row;
       }
 
-      widdgets.add(decorationWidget!);
+      widdgets.add(decorationWidget);
     });
   }
 
@@ -467,5 +461,7 @@ class DecorationVisitor implements md.NodeVisitor {
   }
 
   @override
-  void visitText(md.Text text) {}
+  void visitText(md.Text text) {
+    dve = null;
+  }
 }

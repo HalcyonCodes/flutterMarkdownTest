@@ -11,6 +11,7 @@ class MdBuilder implements md.NodeVisitor {
   List<md.Node>? astNodes;
   List<Widget> bWidgets = [];
   StyleSheet? styleSheet;
+  String? lastTag;
 
   MdBuilder({required this.width, required this.data}) {
     styleSheet = StyleSheet();
@@ -46,11 +47,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.normalStyle;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h1':
@@ -59,11 +62,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h1;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h2':
@@ -72,11 +77,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h2;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h3':
@@ -85,11 +92,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h3;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h4':
@@ -98,11 +107,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h4;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h5':
@@ -111,11 +122,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h5;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'h6':
@@ -124,11 +137,13 @@ class MdBuilder implements md.NodeVisitor {
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.h6;
           Widget textWidget = TextWidget(
+            lastTag: lastTag,
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
           );
           bWidgets.add(textWidget);
+          lastTag = e.tag;
         }
         break;
       case 'ul':

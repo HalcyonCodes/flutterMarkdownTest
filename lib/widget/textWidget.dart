@@ -15,10 +15,18 @@ class TextWidget extends StatefulWidget {
   double marginLeft = 0.0;
   double marginright = 0.0;
   bool isFirst;
+
   List<TextSpan> texts = [];
   md.Element e;
   StyleSheet st;
-  TextWidget({required this.e, required this.st, required this.isFirst}) {
+
+  String? lastTag;
+
+  TextWidget(
+      {this.lastTag,
+      required this.e,
+      required this.st,
+      required this.isFirst}) {
     paddingTop = 0.0;
     paddingBottom = 0.0;
     paddingLeft = 0.0;
@@ -86,6 +94,7 @@ class _TextWidgetState extends State<TextWidget> {
 
   void decoration() {
     //eTemp = de;
+
     switch (widget.e.tag) {
       case 'li':
         {
@@ -103,10 +112,19 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 31.5;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 31.5 - 16;
+            } else {
+              widget.marginTop = 31.5;
+            }
           }
           widget.marginBottom = 16;
-          widget.paddingBottom = 9;
+          widget.paddingBottom = 9.45;
         }
         break;
       case 'h2':
@@ -114,10 +132,19 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 24.5;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 24.5 - 16;
+            } else {
+              widget.marginTop = 24.5;
+            }
           }
           widget.marginBottom = 16;
-          widget.paddingBottom = 9;
+          widget.paddingBottom = 7.35;
         }
         break;
       case 'h3':
@@ -125,7 +152,16 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 21;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 21 - 16;
+            } else {
+              widget.marginTop = 21;
+            }
           }
           widget.marginBottom = 16;
           widget.paddingBottom = 0;
@@ -136,7 +172,16 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 17.500;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 17.500 - 16;
+            } else {
+              widget.marginTop = 17.500;
+            }
           }
           widget.marginBottom = 16;
           widget.paddingBottom = 0;
@@ -147,7 +192,16 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 14;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 0; //14 -16
+            } else {
+              widget.marginTop = 14;
+            }
           }
           widget.marginBottom = 16;
           widget.paddingBottom = 0;
@@ -158,7 +212,16 @@ class _TextWidgetState extends State<TextWidget> {
           if (widget.isFirst) {
             widget.marginTop = 0;
           } else {
-            widget.marginTop = 14;
+            if (widget.lastTag == 'h1' ||
+                widget.lastTag == 'h2' ||
+                widget.lastTag == 'h3' ||
+                widget.lastTag == 'h4' ||
+                widget.lastTag == 'h5' ||
+                widget.lastTag == 'h6') {
+              widget.marginTop = 0; //14-16
+            } else {
+              widget.marginTop = 14;
+            }
           }
           widget.marginBottom = 16;
           widget.paddingBottom = 0;
@@ -328,5 +391,3 @@ class TextNodeVisitor implements md.NodeVisitor {
     return st.normalStyle;
   }
 }
-
-

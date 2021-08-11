@@ -205,7 +205,7 @@ class _ListWidgetState extends State<ListWidget> {
               children: [row],
             ),
             SizedBox(
-              height: 9,
+              height: 9.45,
             ),
             Container(
               padding: EdgeInsets.only(left: 28.00 * spaceCount),
@@ -227,13 +227,13 @@ class _ListWidgetState extends State<ListWidget> {
           children: [
             if (!widget.isFirst)
               SizedBox(
-                height: 31.5,
+                height: 24.5,
               ),
             Row(
               children: [row],
             ),
             SizedBox(
-              height: 9,
+              height: 7.35,
             ),
             Container(
               padding: EdgeInsets.only(left: 28.00 * spaceCount),

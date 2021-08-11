@@ -329,19 +329,4 @@ class TextNodeVisitor implements md.NodeVisitor {
   }
 }
 
-class DecorationVisitor implements md.NodeVisitor {
-  md.Element? dve;
 
-  @override
-  void visitElementAfter(md.Element element) {}
-
-  @override
-  bool visitElementBefore(md.Element element) {
-    dve = element;
-
-    return false;
-  }
-
-  @override
-  void visitText(md.Text text) {}
-}

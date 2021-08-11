@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import '../style/styleSheet.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -39,6 +41,10 @@ class _ListWidgetState extends State<ListWidget> {
   }
 
   void bulidByMap() {
+    String tagTemp = 'p';
+    Widget? decorationWidget;
+    double spaceCount = 0;
+
     widget.map!.forEach((key, value) {
       if (widdgets.length != 0) widget.isFirst = false;
       List<String> temp = key.split('_');
@@ -64,6 +70,7 @@ class _ListWidgetState extends State<ListWidget> {
                     ),
                     alignment: PlaceholderAlignment.baseline),
               );
+              spaceCount = 1;
             }
             break;
           case 2:
@@ -85,6 +92,7 @@ class _ListWidgetState extends State<ListWidget> {
                 ),
                 alignment: PlaceholderAlignment.baseline,
               ));
+              spaceCount = 2;
             }
             break;
           case 3:
@@ -109,6 +117,7 @@ class _ListWidgetState extends State<ListWidget> {
                     st: widget.st,
                     isFirst: widget.isFirst,
                   )));
+              spaceCount = 3;
             }
             break;
           case 4:
@@ -137,11 +146,13 @@ class _ListWidgetState extends State<ListWidget> {
                     st: widget.st,
                     isFirst: widget.isFirst,
                   )));
+              spaceCount = 4;
             }
             break;
           default:
             {
-              for (int i = 0; i < length - 1; i++) {
+              int i = 0;
+              for (i = 0; i < length - 1; i++) {
                 rowTemp.add(WidgetSpan(
                     baseline: TextBaseline.alphabetic,
                     alignment: PlaceholderAlignment.baseline,
@@ -159,17 +170,96 @@ class _ListWidgetState extends State<ListWidget> {
                     st: widget.st,
                     isFirst: widget.isFirst,
                   )));
+              spaceCount = i + 1;
             }
             break;
         }
       }
+
       Widget row = RichText(
         softWrap: false,
         overflow: TextOverflow.visible,
         text: TextSpan(children: rowTemp),
       );
+      if (value.children != null) {
+        DecorationVisitor dVisiter = DecorationVisitor();
+        value.children![0].accept(dVisiter);
+        if (dVisiter.dve != null) {
+          tagTemp = dVisiter.dve!.tag;
+        }
+      }
 
-      widdgets.add(row);
+      switch (tagTemp) {
+        case 'h1':
+          {
+            decorationWidget = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!widget.isFirst)
+                  SizedBox(
+                    height: 31.5,
+                  ),
+                Row(
+                  children: [row],
+                ),
+                SizedBox(
+                  height: 9,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 28.00 * spaceCount),
+                  child: Divider(
+                    height: 0.0,
+                    indent: 0.0,
+                    color: Colors.black.withOpacity(0.20),
+                    thickness: 0.7,
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                )
+              ],
+            );
+          }
+          break;
+        case 'h2':
+          {
+            decorationWidget = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!widget.isFirst)
+                  SizedBox(
+                    height: 31.5,
+                  ),
+                Row(
+                  children: [row],
+                ),
+                SizedBox(
+                  height: 9,
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: 28.00 * spaceCount),
+                  child: Divider(
+                    height: 0.0,
+                    indent: 0.0,
+                    color: Colors.black.withOpacity(0.20),
+                    thickness: 0.7,
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                )
+              ],
+            );
+          }
+          break;
+        default:
+          {
+            decorationWidget = row;
+          }
+          break;
+      }
+
+      widdgets.add(decorationWidget!);
     });
   }
 
@@ -355,6 +445,23 @@ class ListNodeVisitor implements md.NodeVisitor {
         keyTemp = key.split('_');
       }
     }
+
+    return false;
+  }
+
+  @override
+  void visitText(md.Text text) {}
+}
+
+class DecorationVisitor implements md.NodeVisitor {
+  md.Element? dve;
+
+  @override
+  void visitElementAfter(md.Element element) {}
+
+  @override
+  bool visitElementBefore(md.Element element) {
+    dve = element;
 
     return false;
   }

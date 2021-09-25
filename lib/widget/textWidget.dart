@@ -21,12 +21,17 @@ class TextWidget extends StatefulWidget {
   StyleSheet st;
 
   String? lastTag;
+  bool isEnd;
+  bool isInQuote;
 
-  TextWidget(
-      {this.lastTag,
-      required this.e,
-      required this.st,
-      required this.isFirst}) {
+  TextWidget({
+    this.lastTag,
+    required this.e,
+    required this.st,
+    required this.isFirst,
+    required this.isEnd,
+    required this.isInQuote,
+  }) {
     paddingTop = 0.0;
     paddingBottom = 0.0;
     paddingLeft = 0.0;
@@ -36,10 +41,13 @@ class TextWidget extends StatefulWidget {
     marginBottom = 0.0;
     marginLeft = 0.0;
     marginright = 0.0;
-    TextNodeVisitor tVisitor = TextNodeVisitor(st: st);
+    TextNodeVisitor tVisitor = TextNodeVisitor(st: st, isInQuote: isInQuote);
     tVisitor.visit(e.children);
     texts = tVisitor.textSpans;
     st.fatherTextStyle = st.normalStyle;
+    if (isInQuote)
+      st.fatherTextStyle =
+          st.fatherTextStyle!.copyWith(fontStyle: FontStyle.italic);
   }
 
   @override
@@ -117,13 +125,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 31.5 - 16;
             } else {
               widget.marginTop = 31.5;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 9.45;
         }
         break;
@@ -137,13 +146,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 24.5 - 16;
             } else {
               widget.marginTop = 24.5;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 7.35;
         }
         break;
@@ -157,13 +167,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 21 - 16;
             } else {
               widget.marginTop = 21;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 0;
         }
         break;
@@ -177,13 +188,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 17.500 - 16;
             } else {
               widget.marginTop = 17.500;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 0;
         }
         break;
@@ -197,13 +209,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 0; //14 -16
             } else {
               widget.marginTop = 14;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 0;
         }
         break;
@@ -217,13 +230,14 @@ class _TextWidgetState extends State<TextWidget> {
                 widget.lastTag == 'h3' ||
                 widget.lastTag == 'h4' ||
                 widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6') {
+                widget.lastTag == 'h6' ||
+                widget.lastTag == 'blockquote') {
               widget.marginTop = 0; //14-16
             } else {
               widget.marginTop = 14;
             }
           }
-          widget.marginBottom = 16;
+          widget.marginBottom = widget.isEnd ? 0 : 16;
           widget.paddingBottom = 0;
         }
         break;
@@ -233,7 +247,7 @@ class _TextWidgetState extends State<TextWidget> {
 
 class TextNodeVisitor implements md.NodeVisitor {
   StyleSheet st;
-  TextNodeVisitor({required this.st}) {
+  TextNodeVisitor({required this.st, required this.isInQuote}) {
     styleTemps.add(st.fatherTextStyle!);
     CurrentStyle = styleTemps.last;
   }
@@ -252,6 +266,9 @@ class TextNodeVisitor implements md.NodeVisitor {
   bool isInTagA = false;
 
   int index = 0;
+
+  bool isInQuote;
+
   void visit(List<md.Node>? nodes) {
     nodes!.forEach((e) {
       e.accept(this);
@@ -263,6 +280,13 @@ class TextNodeVisitor implements md.NodeVisitor {
 
   @override
   bool visitElementBefore(md.Element element) {
+    if (element.tag == 'br') {
+      TextSpan TextBr = TextSpan(
+        text: '\n',
+      );
+      textSpans.add(TextBr);
+      return false;
+    }
     if (element.tag == 'ul') return false;
     if (element.tag == 'a') {
       isInTagA = true;
@@ -307,6 +331,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.normalStyle;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -314,6 +339,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.normalStyle;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -321,6 +347,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h1;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -328,6 +355,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h2;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -335,6 +363,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h3;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -342,6 +371,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h4;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -349,6 +379,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h5;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -356,6 +387,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h6;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -363,13 +395,16 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.a!;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
       case 'em':
         {
+          //字体改成italy
           st.setStyleSheet();
           TextStyle t = st.em!;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -377,6 +412,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.strong!;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }
@@ -384,6 +420,7 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.del!;
+          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
           st.fatherTextStyle = t;
           return t;
         }

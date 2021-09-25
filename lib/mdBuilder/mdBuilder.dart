@@ -4,6 +4,7 @@ import '../parse/parse.dart';
 import 'package:markdown/markdown.dart' as md;
 import '../widget/textWidget.dart';
 import '../widget/listWidget.dart';
+import '../widget/blockQuoteWidget.dart';
 
 class MdBuilder implements md.NodeVisitor {
   String data;
@@ -25,7 +26,7 @@ class MdBuilder implements md.NodeVisitor {
 
   @override
   void visitElementAfter(md.Element element) {
-    //print(element.tag);
+    //print(element.tag); //test
   }
 
   @override
@@ -40,6 +41,8 @@ class MdBuilder implements md.NodeVisitor {
   }
 
   void blockSelect(md.Element e) {
+    bool isOnlyQuote = false;
+
     switch (e.tag) {
       case 'p':
         {
@@ -51,6 +54,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -66,6 +71,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -81,6 +88,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -96,6 +105,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -111,6 +122,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -126,6 +139,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -141,6 +156,8 @@ class MdBuilder implements md.NodeVisitor {
             e: e,
             st: styleSheet!,
             isFirst: isFirst,
+            isEnd: false,
+            isInQuote: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -149,6 +166,7 @@ class MdBuilder implements md.NodeVisitor {
       case 'ul':
         {
           bool isFirst = false;
+          bool isEnd = false;
           if (bWidgets.length == 0) isFirst = true;
           styleSheet!.fatherTextStyle = styleSheet!.normalStyle;
           Widget listWidget = ListWidget(
@@ -156,10 +174,39 @@ class MdBuilder implements md.NodeVisitor {
             st: styleSheet!,
             isFirst: isFirst,
             width: width,
+            isInQuote: false,
+            isEnd: isEnd,
           );
           bWidgets.add(listWidget);
         }
         break;
+      case 'blockquote':
+        {
+          bool isFirst = false;
+          bool isEnd = false;
+          if (bWidgets.length == 0) isFirst = true;
+          if (e == astNodes!.last) isEnd = true;
+          if (e.children!.length == 1) {
+            QuoteNodeVisitor qVister =
+                QuoteNodeVisitor(st: styleSheet!, width: width);
+            qVister.visit(e.children);
+            isOnlyQuote = qVister.isOnlyQuote;
+          }
+
+          if (e.children!.length == 1)
+            styleSheet!.fatherTextStyle = styleSheet!.normalStyle;
+          Widget blockQuoteWidget = BlockQuoteWidget(
+            e: e,
+            st: styleSheet!,
+            isFirst: isFirst,
+            isEnd: isEnd,
+            isInQuote: false,
+            isOnlyQuote: isOnlyQuote,
+            lastIsP: false,
+            //quoteColor: Color.from,
+          );
+          bWidgets.add(blockQuoteWidget);
+        }
     }
   }
 }

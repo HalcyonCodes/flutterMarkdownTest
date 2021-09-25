@@ -1,5 +1,3 @@
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import '../style/styleSheet.dart';
 import 'package:markdown/markdown.dart' as md;
@@ -14,11 +12,16 @@ class ListWidget extends StatefulWidget {
   StyleSheet st;
   double width;
   Map<String, md.Element>? map;
-  ListWidget(
-      {required this.width,
-      required this.e,
-      required this.st,
-      required this.isFirst}) {
+  bool isInQuote;
+  bool isEnd;
+  ListWidget({
+    required this.width,
+    required this.e,
+    required this.st,
+    required this.isFirst,
+    required this.isInQuote,
+    required this.isEnd,
+  }) {
     ListNodeVisitor lVisitor = ListNodeVisitor();
     lVisitor.visitStar(e);
     map = lVisitor.map; //忽略'_0_'
@@ -35,7 +38,17 @@ class _ListWidgetState extends State<ListWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: widdgets,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: widdgets,
+          ),
+          if (!widget.isEnd)
+            SizedBox(
+              height: 16,
+            )
+        ],
       ),
     );
   }
@@ -45,6 +58,9 @@ class _ListWidgetState extends State<ListWidget> {
     Widget decorationWidget;
     double spaceCount = 0;
     DecorationVisitor dVisiter = DecorationVisitor();
+    int mapCount = widget.map!.length;
+    int currentMapCount = 0;
+    String lastTag = 'p';
 
     widget.map!.forEach((key, value) {
       tagTemp = 'p';
@@ -59,6 +75,8 @@ class _ListWidgetState extends State<ListWidget> {
         switch (length) {
           case 1:
             {
+              bool isEnd = false;
+              if (currentMapCount == mapCount - 1) isEnd = true;
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -70,6 +88,8 @@ class _ListWidgetState extends State<ListWidget> {
                       e: value,
                       st: widget.st,
                       isFirst: widget.isFirst,
+                      isEnd: isEnd,
+                      isInQuote: widget.isInQuote,
                     ),
                     alignment: PlaceholderAlignment.baseline),
               );
@@ -78,6 +98,8 @@ class _ListWidgetState extends State<ListWidget> {
             break;
           case 2:
             {
+              bool isEnd = false;
+              if (currentMapCount == mapCount - 1) isEnd = true;
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -92,6 +114,8 @@ class _ListWidgetState extends State<ListWidget> {
                   e: value,
                   st: widget.st,
                   isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
                 ),
                 alignment: PlaceholderAlignment.baseline,
               ));
@@ -100,6 +124,8 @@ class _ListWidgetState extends State<ListWidget> {
             break;
           case 3:
             {
+              bool isEnd = false;
+              if (currentMapCount == mapCount - 1) isEnd = true;
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -119,12 +145,16 @@ class _ListWidgetState extends State<ListWidget> {
                     e: value,
                     st: widget.st,
                     isFirst: widget.isFirst,
+                    isEnd: isEnd,
+                    isInQuote: widget.isInQuote,
                   )));
               spaceCount = 3;
             }
             break;
           case 4:
             {
+              bool isEnd = false;
+              if (currentMapCount == mapCount - 1) isEnd = true;
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -148,12 +178,16 @@ class _ListWidgetState extends State<ListWidget> {
                     e: value,
                     st: widget.st,
                     isFirst: widget.isFirst,
+                    isEnd: isEnd,
+                    isInQuote: widget.isInQuote,
                   )));
               spaceCount = 4;
             }
             break;
           default:
             {
+              bool isEnd = false;
+              if (currentMapCount == mapCount - 1) isEnd = true;
               int i = 0;
               for (i = 0; i < length - 1; i++) {
                 rowTemp.add(WidgetSpan(
@@ -172,6 +206,8 @@ class _ListWidgetState extends State<ListWidget> {
                     e: value,
                     st: widget.st,
                     isFirst: widget.isFirst,
+                    isEnd: isEnd,
+                    isInQuote: widget.isInQuote,
                   )));
               spaceCount = i + 1;
             }
@@ -194,12 +230,27 @@ class _ListWidgetState extends State<ListWidget> {
       }
 
       if (tagTemp == 'h1') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 31.5 - 16;
+        } else {
+          marginTop = 31.5;
+        }
+
+        if (currentMapCount == mapCount - 1) isEnd = true;
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!widget.isFirst)
               SizedBox(
-                height: 31.5,
+                height: marginTop,
               ),
             Row(
               children: [row],
@@ -217,17 +268,32 @@ class _ListWidgetState extends State<ListWidget> {
               ),
             ),
             SizedBox(
-              height: 16,
+              height: isEnd ? 0 : 16,
             )
           ],
         );
+        lastTag = 'h1';
       } else if (tagTemp == 'h2') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 24.5 - 16;
+        } else {
+          marginTop = 24.5;
+        }
+        if (currentMapCount == mapCount - 1) isEnd = true;
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!widget.isFirst)
               SizedBox(
-                height: 24.5,
+                height: marginTop,
               ),
             Row(
               children: [row],
@@ -245,15 +311,141 @@ class _ListWidgetState extends State<ListWidget> {
               ),
             ),
             SizedBox(
-              height: 16,
+              height: isEnd ? 0 : 16,
             )
           ],
         );
+        lastTag = 'h2';
+      } else if (tagTemp == 'h3') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 21 - 16;
+        } else {
+          marginTop = 21;
+        }
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: marginTop,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: isEnd ? 0 : 16,
+            )
+          ],
+        );
+        lastTag = 'h3';
+      } else if (tagTemp == 'h4') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 17.500 - 16;
+        } else {
+          marginTop = 17.500;
+        }
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: marginTop,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: isEnd ? 0 : 16,
+            )
+          ],
+        );
+        lastTag = 'h4';
+      } else if (tagTemp == 'h5') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 0;
+        } else {
+          marginTop = 14;
+        }
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: marginTop,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: isEnd ? 0 : 16,
+            )
+          ],
+        );
+        lastTag = 'h5';
+      } else if (tagTemp == 'h6') {
+        bool isEnd = false;
+        double marginTop;
+        if (lastTag == 'h1' ||
+            lastTag == 'h2' ||
+            lastTag == 'h3' ||
+            lastTag == 'h4' ||
+            lastTag == 'h5' ||
+            lastTag == 'h6' ||
+            lastTag == 'blockquote') {
+          marginTop = 0;
+        } else {
+          marginTop = 14;
+        }
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (!widget.isFirst)
+              SizedBox(
+                height: marginTop,
+              ),
+            Row(
+              children: [row],
+            ),
+            SizedBox(
+              height: isEnd ? 0 : 16,
+            )
+          ],
+        );
+        lastTag = 'h6';
       } else {
         decorationWidget = row;
       }
 
       widdgets.add(decorationWidget);
+      currentMapCount++;
     });
   }
 

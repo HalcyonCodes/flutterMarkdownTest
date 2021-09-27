@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:test/mdBuilder/mdBuilder.dart';
 import '../style/styleSheet.dart';
 import 'package:markdown/markdown.dart' as md;
 import './textWidget.dart';
+
 
 class ListWidget extends StatefulWidget {
   @override
@@ -77,10 +79,18 @@ class _ListWidgetState extends State<ListWidget> {
             {
               bool isEnd = false;
               if (currentMapCount == mapCount - 1) isEnd = true;
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: blackDot()));
+              if (temp[length - 1] == 'X') {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+              } else {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: blackDot()));
+              }
+
               rowTemp.add(
                 WidgetSpan(
                     baseline: TextBaseline.alphabetic,
@@ -100,14 +110,25 @@ class _ListWidgetState extends State<ListWidget> {
             {
               bool isEnd = false;
               if (currentMapCount == mapCount - 1) isEnd = true;
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: whitekDot()));
+              if (temp[length - 1] == 'X') {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+              } else {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: whitekDot()));
+              }
               rowTemp.add(WidgetSpan(
                 baseline: TextBaseline.alphabetic,
                 child: TextWidget(
@@ -126,18 +147,34 @@ class _ListWidgetState extends State<ListWidget> {
             {
               bool isEnd = false;
               if (currentMapCount == mapCount - 1) isEnd = true;
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: rectBlackDot()));
+              if (temp[length - 1] == 'X') {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+              } else {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: rectBlackDot()));
+              }
+
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -155,22 +192,42 @@ class _ListWidgetState extends State<ListWidget> {
             {
               bool isEnd = false;
               if (currentMapCount == mapCount - 1) isEnd = true;
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: offsetPlace()));
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: rectBlackDot()));
+              if (temp[length - 1] == 'X') {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+              } else {
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: offsetPlace()));
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: rectBlackDot()));
+              }
+
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -189,16 +246,26 @@ class _ListWidgetState extends State<ListWidget> {
               bool isEnd = false;
               if (currentMapCount == mapCount - 1) isEnd = true;
               int i = 0;
-              for (i = 0; i < length - 1; i++) {
+              if (temp[length - 1] == 'X') {
+                for (i = 0; i < length; i++) {
+                  rowTemp.add(WidgetSpan(
+                      baseline: TextBaseline.alphabetic,
+                      alignment: PlaceholderAlignment.baseline,
+                      child: offsetPlace()));
+                }
+              } else {
+                for (i = 0; i < length - 1; i++) {
+                  rowTemp.add(WidgetSpan(
+                      baseline: TextBaseline.alphabetic,
+                      alignment: PlaceholderAlignment.baseline,
+                      child: offsetPlace()));
+                }
                 rowTemp.add(WidgetSpan(
                     baseline: TextBaseline.alphabetic,
                     alignment: PlaceholderAlignment.baseline,
-                    child: offsetPlace()));
+                    child: rectBlackDot()));
               }
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: rectBlackDot()));
+
               rowTemp.add(WidgetSpan(
                   baseline: TextBaseline.alphabetic,
                   alignment: PlaceholderAlignment.baseline,
@@ -440,8 +507,12 @@ class _ListWidgetState extends State<ListWidget> {
           ],
         );
         lastTag = 'h6';
+      } else if (tagTemp == 'p') {
+        decorationWidget = row;
+        lastTag = 'p';
       } else {
         decorationWidget = row;
+        lastTag = 'p';
       }
 
       widdgets.add(decorationWidget);
@@ -564,14 +635,19 @@ class ListNodeVisitor implements md.NodeVisitor {
   String currentKey = '';
   List<String> keyTemp = [];
   bool isFirst = true;
+  bool isSameLevel = false;
 
   void visitStar(md.Element e) {
     e.accept(this);
   }
 
-  void visit(List<md.Node>? nodes) {
+  void visit(
+    List<md.Node>? nodes,
+  ) {
+    isSameLevel = false;
     nodes!.forEach((e) {
       e.accept(this);
+      //isSameLevel = true;
     });
   }
 
@@ -587,24 +663,191 @@ class ListNodeVisitor implements md.NodeVisitor {
         maxKeyLength = maxKeyLength + 1;
       }
       if (element.tag == 'li') {
-        currentKey = (int.tryParse(currentKey)! + 1).toString();
-        key = '';
+        //map.putIfAbsent(key, () => element);
+        DecorationVisitor dk = DecorationVisitor();
 
-        for (int n = 0; n < keyTemp.length - 1; n++) {
-          if (n == keyTemp.length - 2 && n != 0) {
-            key = key + currentKey + '_' + '0' + '_';
-          } else if (n == 0 && n != keyTemp.length - 2) {
-            key = keyTemp[0] + '_';
-          } else if (n == 0 && n == keyTemp.length - 2) {
-            key = currentKey + '_' + '0' + '_';
+        md.Element eleTrueTemp = md.Element.withTag('p');
+        element.children!.forEach((e) {
+          e.accept(dk);
+          if (dk.dve == null) {
+            eleTrueTemp.children!.add(e);
+            int a = 0;
+
+            if (element.children!.last == e && element.children!.length != 0) {
+              currentKey = (int.tryParse(currentKey)! + 1).toString();
+
+              key = '';
+
+              for (int n = 0; n < keyTemp.length - 1; n++) {
+                if (n == keyTemp.length - 2 && n != 0) {
+                  key = key + currentKey + '_' + '0' + '_';
+                } else if (n == 0 && n != keyTemp.length - 2) {
+                  key = keyTemp[0] + '_';
+                } else if (n == 0 && n == keyTemp.length - 2) {
+                  key = currentKey + '_' + '0' + '_';
+                } else {
+                  key = key + keyTemp[n] + '_';
+                }
+              }
+
+              md.Element eleeTemp = md.Element.withTag('p');
+              eleTrueTemp.children!.forEach((e) {
+                eleeTemp.children!.add(e);
+              });
+              map.putIfAbsent(key, () => eleeTemp);
+              eleTrueTemp.children!.clear();
+            }
+          } else if (dk.dve!.tag == 'p' ||
+              dk.dve!.tag == 'h1' ||
+              dk.dve!.tag == 'h2' ||
+              dk.dve!.tag == 'h3' ||
+              dk.dve!.tag == 'h4' ||
+              dk.dve!.tag == 'h5' ||
+              dk.dve!.tag == 'h6' ||
+              dk.dve!.tag == 'blockquote' ||
+              dk.dve!.tag == 'ul') {
+            if (element.children!.first == e) {
+              //
+              eleTrueTemp.children!.add(e);
+              currentKey = (int.tryParse(currentKey)! + 1).toString();
+
+              key = '';
+
+              for (int n = 0; n < keyTemp.length - 1; n++) {
+                if (n == keyTemp.length - 2 && n != 0) {
+                  key = key + currentKey + '_' + '0' + '_';
+                } else if (n == 0 && n != keyTemp.length - 2) {
+                  key = keyTemp[0] + '_';
+                } else if (n == 0 && n == keyTemp.length - 2) {
+                  key = currentKey + '_' + '0' + '_';
+                } else {
+                  key = key + keyTemp[n] + '_';
+                }
+              }
+              md.Element eleeTemp = md.Element.withTag('p');
+              eleTrueTemp.children!.forEach((e) {
+                eleeTemp.children!.add(e);
+              });
+              map.putIfAbsent(key, () => eleeTemp);
+              eleTrueTemp.children!.clear();
+            } else {
+              if (eleTrueTemp.children!.length != 0) {
+                currentKey = (int.tryParse(currentKey)! + 1).toString();
+                key = '';
+
+                for (int n = 0; n < keyTemp.length - 1; n++) {
+                  if (n == keyTemp.length - 2 && n != 0) {
+                    key = key + currentKey + '_' + '0' + '_';
+                  } else if (n == 0 && n != keyTemp.length - 2) {
+                    key = keyTemp[0] + '_';
+                  } else if (n == 0 && n == keyTemp.length - 2) {
+                    key = currentKey + '_' + '0' + '_';
+                  } else {
+                    key = key + keyTemp[n] + '_';
+                  }
+                }
+                md.Element eleTemp = md.Element.withTag('p');
+                eleTrueTemp.children!.forEach((e) {
+                  eleTemp.children!.add(e);
+                });
+                map.putIfAbsent(key, () => eleTemp);
+
+                eleTrueTemp.children!.clear();
+              }
+
+              if (dk.dve!.tag == 'ul') {
+                keyTemp = key.split('_');
+                currentKey = keyTemp[maxKeyLength];
+                maxKeyLength = maxKeyLength + 1;
+                visit(dk.dve!.children);
+                if (isFirst == true) {
+                  maxKeyLength = maxKeyLength - 1;
+                  isFirst = false;
+                }
+                maxKeyLength = maxKeyLength - 1;
+                if (maxKeyLength == -1) maxKeyLength = 0;
+                keyTemp = key.split('_');
+
+                currentKey = keyTemp[maxKeyLength];
+                for (int i = 0; i <= maxKeyLength; i++) {
+                  if (i == 0 && maxKeyLength == 0) {
+                    key = currentKey + '_' + '0';
+                  } else if (i == 0 && maxKeyLength != 0) {
+                    key = keyTemp[0] + '_';
+                  } else if (i == maxKeyLength && i != 0) {
+                    key = key + keyTemp[i] + '_' + '0';
+                  } else {
+                    key = key + keyTemp[i] + '_';
+                  }
+                }
+                keyTemp = key.split('_');
+              }
+              if (dk.dve!.tag == 'p' ||
+                  dk.dve!.tag == 'h1' ||
+                  dk.dve!.tag == 'h2' ||
+                  dk.dve!.tag == 'h3' ||
+                  dk.dve!.tag == 'h4' ||
+                  dk.dve!.tag == 'h5' ||
+                  dk.dve!.tag == 'h6' ||
+                  dk.dve!.tag == 'blockquote') {
+                eleTrueTemp.children!.add(e);
+                currentKey = (int.tryParse(currentKey)! + 1).toString();
+                key = '';
+                //
+                String currentKeyTemp = '';
+                currentKeyTemp = currentKey;
+                currentKey = 'X';
+
+                for (int n = 0; n < keyTemp.length - 1; n++) {
+                  if (n == keyTemp.length - 2 && n != 0) {
+                    key = key + currentKey + '_' + '0' + '_';
+                  } else if (n == 0 && n != keyTemp.length - 2) {
+                    key = keyTemp[0] + '_';
+                  } else if (n == 0 && n == keyTemp.length - 2) {
+                    key = currentKey + '_' + '0' + '_';
+                  } else {
+                    key = key + keyTemp[n] + '_';
+                  }
+                }
+                md.Element eleeTemp = md.Element.withTag('p');
+                eleTrueTemp.children!.forEach((e) {
+                  eleeTemp.children!.add(e);
+                });
+                map.putIfAbsent(key, () => eleeTemp);
+                eleTrueTemp.children!.clear();
+                //
+                currentKey = currentKeyTemp;
+              }
+            }
           } else {
-            key = key + keyTemp[n] + '_';
-          }
-        }
+            eleTrueTemp.children!.add(e);
+            if (element.children!.last == e && element.children!.length != 0) {
+              currentKey = (int.tryParse(currentKey)! + 1).toString();
+              key = '';
 
-        map.putIfAbsent(key, () => element);
+              for (int n = 0; n < keyTemp.length - 1; n++) {
+                if (n == keyTemp.length - 2 && n != 0) {
+                  key = key + currentKey + '_' + '0' + '_';
+                } else if (n == 0 && n != keyTemp.length - 2) {
+                  key = keyTemp[0] + '_';
+                } else if (n == 0 && n == keyTemp.length - 2) {
+                  key = currentKey + '_' + '0' + '_';
+                } else {
+                  key = key + keyTemp[n] + '_';
+                }
+              }
+              md.Element eleTemp = md.Element.withTag('p');
+              eleTrueTemp.children!.forEach((e) {
+                eleTemp.children!.add(e);
+              });
+              map.putIfAbsent(key, () => eleTemp);
+
+              eleTrueTemp.children!.clear();
+            }
+          }
+        });
       }
-      if (element.children != null) {
+      if (element.children != null && element.tag == 'ul') {
         visit(element.children);
       }
       if (element.tag == 'ul') {

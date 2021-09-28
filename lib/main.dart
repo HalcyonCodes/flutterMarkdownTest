@@ -53,8 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
               //strutStyle: StrutStyle(height: 1.6),
             ),
             Container(
-              width: 100,
-              height: 100,
+              width: 150,
+              height: 50,
               color: Colors.red,
               child: InkWell(
                 onTap: () {
@@ -63,12 +63,17 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Container(
-                padding: EdgeInsets.symmetric(horizontal: 30),
                 child: Container(
-                  //height: 600,
-                  width: 600,
-                  child: FditorPreview(data: td.text),
-                ))
+                    //height: 600,
+                    margin: EdgeInsets.all(30),
+                    padding: EdgeInsets.all(30),
+                    width: 300,
+                    child: FditorPreview(
+                      data: td.text,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.black),
+                    )))
           ],
         ),
       ),

@@ -46,8 +46,8 @@ class TextWidget extends StatefulWidget {
     texts = tVisitor.textSpans;
     st.fatherTextStyle = st.normalStyle;
     if (isInQuote)
-      st.fatherTextStyle =
-          st.fatherTextStyle!.copyWith(fontStyle: FontStyle.italic);
+      st.fatherTextStyle = st.fatherTextStyle!.copyWith(
+          fontStyle: FontStyle.italic, color: Color.fromRGBO(102, 102, 102, 1));
   }
 
   @override
@@ -77,6 +77,7 @@ class _TextWidgetState extends State<TextWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
+            //width: 100,
             alignment: Alignment.topLeft,
             padding: EdgeInsets.only(
                 bottom: widget.paddingBottom,
@@ -84,6 +85,7 @@ class _TextWidgetState extends State<TextWidget> {
                 left: widget.paddingLeft,
                 right: widget.paddingright),
             child: RichText(
+              softWrap: true,
               textAlign: TextAlign.start,
               text: TextSpan(children: widget.texts),
             ),
@@ -105,15 +107,7 @@ class _TextWidgetState extends State<TextWidget> {
 
     switch (widget.e.tag) {
       case 'li':
-        {
-          /* DecorationVisitor dv = DecorationVisitor();
-          if (de.children != null) {
-            if (de.runtimeType == md.Element) {
-              de.children![0].accept(dv);
-              decoration(dv.dve!);
-            }
-          }*/
-        }
+        {}
         break;
       case 'h1':
         {
@@ -331,7 +325,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.normalStyle;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -339,7 +337,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.normalStyle;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -347,7 +349,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h1;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -355,7 +361,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h2;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -363,7 +373,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h3;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -371,7 +385,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h4;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -379,7 +397,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h5;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }
@@ -387,7 +409,11 @@ class TextNodeVisitor implements md.NodeVisitor {
         {
           st.setStyleSheet();
           TextStyle t = st.h6;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
+          if (isInQuote)
+            t = t.copyWith(
+              fontStyle: FontStyle.italic,
+              color: Color.fromRGBO(102, 102, 102, 1),
+            );
           st.fatherTextStyle = t;
           return t;
         }

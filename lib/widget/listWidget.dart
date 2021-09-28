@@ -3,7 +3,7 @@ import 'package:test/mdBuilder/mdBuilder.dart';
 import '../style/styleSheet.dart';
 import 'package:markdown/markdown.dart' as md;
 import './textWidget.dart';
-
+import './blockQuoteWidget.dart';
 
 class ListWidget extends StatefulWidget {
   @override
@@ -34,32 +34,39 @@ class _ListWidgetState extends State<ListWidget> {
   List<Widget> widdgets = [];
   @override
   Widget build(BuildContext context) {
-    widdgets = [];
-    bulidByMap();
     return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: widdgets,
-          ),
-          if (!widget.isEnd)
-            SizedBox(
-              height: 16,
-            )
-        ],
-      ),
+      child: LayoutBuilder(builder: (context, constrains) {
+        double width = constrains.biggest.width;
+        widdgets = [];
+        bulidByMap(width);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: widdgets,
+            ),
+            if (!widget.isEnd)
+              SizedBox(
+                height: 16,
+              )
+          ],
+        );
+      }),
     );
   }
 
-  void bulidByMap() {
+  void bulidByMap(double width) {
     String tagTemp;
     Widget decorationWidget;
     double spaceCount = 0;
     DecorationVisitor dVisiter = DecorationVisitor();
+    DecorationVisitor quoteOffsetVisiter = DecorationVisitor();
+    DecorationVisitor dotHeightVisiter = DecorationVisitor();
+
     int mapCount = widget.map!.length;
     int currentMapCount = 0;
     String lastTag = 'p';
@@ -71,6 +78,13 @@ class _ListWidgetState extends State<ListWidget> {
       List<String> temp = key.split('_');
       int length = temp.length - 2;
       List<InlineSpan> rowTemp = [];
+
+      bool isQuote = false;
+      if (value.children != null) {
+        value.children![0].accept(quoteOffsetVisiter);
+        if (quoteOffsetVisiter.dve != null)
+          isQuote = quoteOffsetVisiter.dve!.tag == 'blockquote' ? true : false;
+      }
 
       if (length * 28 >= widget.width) {
       } else {
@@ -90,19 +104,23 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: blackDot()));
               }
-
-              rowTemp.add(
-                WidgetSpan(
-                    baseline: TextBaseline.alphabetic,
-                    child: TextWidget(
-                      e: value,
-                      st: widget.st,
-                      isFirst: widget.isFirst,
-                      isEnd: isEnd,
-                      isInQuote: widget.isInQuote,
-                    ),
-                    alignment: PlaceholderAlignment.baseline),
-              );
+              double textWidth = width - 28;
+              if (!isQuote)
+                rowTemp.add(
+                  WidgetSpan(
+                      baseline: TextBaseline.alphabetic,
+                      child: Container(
+                        width: textWidth,
+                        child: TextWidget(
+                          e: value,
+                          st: widget.st,
+                          isFirst: widget.isFirst,
+                          isEnd: isEnd,
+                          isInQuote: widget.isInQuote,
+                        ),
+                      ),
+                      alignment: PlaceholderAlignment.baseline),
+                );
               spaceCount = 1;
             }
             break;
@@ -129,17 +147,22 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: whitekDot()));
               }
-              rowTemp.add(WidgetSpan(
-                baseline: TextBaseline.alphabetic,
-                child: TextWidget(
-                  e: value,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
-                  isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
-                ),
-                alignment: PlaceholderAlignment.baseline,
-              ));
+              double textWidth = width - 28 * length;
+              if (!isQuote)
+                rowTemp.add(WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  child: Container(
+                    width: textWidth,
+                    child: TextWidget(
+                      e: value,
+                      st: widget.st,
+                      isFirst: widget.isFirst,
+                      isEnd: isEnd,
+                      isInQuote: widget.isInQuote,
+                    ),
+                  ),
+                  alignment: PlaceholderAlignment.baseline,
+                ));
               spaceCount = 2;
             }
             break;
@@ -174,17 +197,21 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: rectBlackDot()));
               }
-
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: TextWidget(
-                    e: value,
-                    st: widget.st,
-                    isFirst: widget.isFirst,
-                    isEnd: isEnd,
-                    isInQuote: widget.isInQuote,
-                  )));
+              double textWidth = width - 28 * length;
+              if (!isQuote)
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: Container(
+                      width: textWidth,
+                      child: TextWidget(
+                        e: value,
+                        st: widget.st,
+                        isFirst: widget.isFirst,
+                        isEnd: isEnd,
+                        isInQuote: widget.isInQuote,
+                      ),
+                    )));
               spaceCount = 3;
             }
             break;
@@ -227,17 +254,21 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: rectBlackDot()));
               }
-
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: TextWidget(
-                    e: value,
-                    st: widget.st,
-                    isFirst: widget.isFirst,
-                    isEnd: isEnd,
-                    isInQuote: widget.isInQuote,
-                  )));
+              double textWidth = width - 28 * length;
+              if (!isQuote)
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: Container(
+                      width: textWidth,
+                      child: TextWidget(
+                        e: value,
+                        st: widget.st,
+                        isFirst: widget.isFirst,
+                        isEnd: isEnd,
+                        isInQuote: widget.isInQuote,
+                      ),
+                    )));
               spaceCount = 4;
             }
             break;
@@ -265,28 +296,27 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: rectBlackDot()));
               }
-
-              rowTemp.add(WidgetSpan(
-                  baseline: TextBaseline.alphabetic,
-                  alignment: PlaceholderAlignment.baseline,
-                  child: TextWidget(
-                    e: value,
-                    st: widget.st,
-                    isFirst: widget.isFirst,
-                    isEnd: isEnd,
-                    isInQuote: widget.isInQuote,
-                  )));
+              double textWidth = width - 28 * length;
+              if (!isQuote)
+                rowTemp.add(WidgetSpan(
+                    baseline: TextBaseline.alphabetic,
+                    alignment: PlaceholderAlignment.baseline,
+                    child: Container(
+                      width: textWidth,
+                      child: TextWidget(
+                        e: value,
+                        st: widget.st,
+                        isFirst: widget.isFirst,
+                        isEnd: isEnd,
+                        isInQuote: widget.isInQuote,
+                      ),
+                    )));
               spaceCount = i + 1;
             }
             break;
         }
       }
 
-      Widget row = RichText(
-        softWrap: false,
-        overflow: TextOverflow.visible,
-        text: TextSpan(children: rowTemp),
-      );
       if (value.children != null) {
         value.children![0].accept(dVisiter);
         if (dVisiter.dve != null) {
@@ -295,6 +325,65 @@ class _ListWidgetState extends State<ListWidget> {
           tagTemp = 'p';
         }
       }
+
+      TextStyle dotStyle = widget.st.normalStyle;
+      if (tagTemp == 'blockquote') {
+        md.Element devEle = dVisiter.dve!;
+        int i = 0;
+        while (i == 0) {
+          devEle.children![0].accept(dotHeightVisiter);
+          switch (dotHeightVisiter.dve!.tag) {
+            case 'p':
+              dotStyle =
+                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h1':
+              dotStyle = widget.st.h1.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h2':
+              dotStyle = widget.st.h2.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h3':
+              dotStyle = widget.st.h3.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h4':
+              dotStyle = widget.st.h4.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h5':
+              dotStyle = widget.st.h5.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h6':
+              dotStyle = widget.st.h6.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            default:
+              devEle = dotHeightVisiter.dve!;
+              break;
+          }
+        }
+      }
+
+      rowTemp.add(WidgetSpan(
+        baseline: TextBaseline.alphabetic,
+        alignment: PlaceholderAlignment.baseline,
+        child: Text(
+          '',
+          style: dotStyle,
+        ),
+      ));
+
+      Widget row = RichText(
+        //maxLines: 1, //true
+        softWrap: false, //
+        overflow: TextOverflow.clip,
+        text: TextSpan(children: rowTemp),
+      );
 
       if (tagTemp == 'h1') {
         bool isEnd = false;
@@ -319,9 +408,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: 9.45,
             ),
@@ -362,9 +449,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: 7.35,
             ),
@@ -405,9 +490,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: isEnd ? 0 : 16,
             )
@@ -436,9 +519,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: isEnd ? 0 : 16,
             )
@@ -467,9 +548,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: isEnd ? 0 : 16,
             )
@@ -498,9 +577,7 @@ class _ListWidgetState extends State<ListWidget> {
               SizedBox(
                 height: marginTop,
               ),
-            Row(
-              children: [row],
-            ),
+            row,
             SizedBox(
               height: isEnd ? 0 : 16,
             )
@@ -510,6 +587,35 @@ class _ListWidgetState extends State<ListWidget> {
       } else if (tagTemp == 'p') {
         decorationWidget = row;
         lastTag = 'p';
+      } else if (tagTemp == 'blockquote') {
+        bool isEnd = false;
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        decorationWidget = Column(
+          children: [
+            if (lastTag == 'p')
+              SizedBox(
+                height: 6,
+              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                row,
+                Expanded(
+                  child: Container(
+                    child: BlockQuoteWidget(
+                        e: dVisiter.dve!,
+                        st: widget.st,
+                        isEnd: isEnd,
+                        isInQuote: false,
+                        isOnlyQuote: false,
+                        lastIsP: false),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
       } else {
         decorationWidget = row;
         lastTag = 'p';
@@ -671,7 +777,6 @@ class ListNodeVisitor implements md.NodeVisitor {
           e.accept(dk);
           if (dk.dve == null) {
             eleTrueTemp.children!.add(e);
-            int a = 0;
 
             if (element.children!.last == e && element.children!.length != 0) {
               currentKey = (int.tryParse(currentKey)! + 1).toString();

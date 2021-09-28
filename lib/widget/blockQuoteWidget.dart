@@ -9,7 +9,7 @@ class BlockQuoteWidget extends StatefulWidget {
   bool isEnd;
   md.Element e;
   StyleSheet st;
-  bool isFirst;
+  //bool isFirst;
   bool isInQuote;
   bool isOnlyQuote;
   bool lastIsP;
@@ -18,7 +18,7 @@ class BlockQuoteWidget extends StatefulWidget {
     this.quoteColor,
     required this.e,
     required this.st,
-    required this.isFirst,
+    //required this.isFirst,
     required this.isEnd,
     required this.isInQuote,
     required this.isOnlyQuote,
@@ -47,9 +47,6 @@ class _BlockQuoteWidgetState extends State<BlockQuoteWidget> {
             left: 20,
             right: 15,
             top: 0,
-            //bottom: widget.isInQuote ? 2 : (widget.isOnlyQuote ? 0 : 2)),
-            //bottom: widget.isOnlyQuote ? 0 : (widget.isInQuote ? 2 : 0)),
-            //bottom: widget.isInQuote ? 2 : ((widget.isOnlyQuote || widget.isInQuote) ? 0 : 2)),
             bottom: widget.isOnlyQuote ? (widget.isInQuote ? 2 : 0) : 2),
         decoration: BoxDecoration(
             border: Border(
@@ -297,9 +294,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
         break;
       case 'blockquote':
         {
-          bool isFirst = false;
+          //bool isFirst = false;
           bool isEnd = false;
-          if (widgetsTemp.length == 0) isFirst = true;
+          //if (widgetsTemp.length == 0) isFirst = true;
           if (e == this.nodes.last) isEnd = true;
           if (e.tag == 'blockquote' && this.nodes.length == 1)
             isOnlyQuote = true;
@@ -310,7 +307,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
           Widget blockQuoteWidget = BlockQuoteWidget(
             e: e,
             st: st,
-            isFirst: isFirst,
+            //isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
             //quoteColor: Color.from,

@@ -65,9 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
                 child: Container(
                     //height: 600,
-                    margin: EdgeInsets.all(30),
-                    padding: EdgeInsets.all(30),
-                    width: 300,
+                    margin: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
+                    width: 700,
                     child: FditorPreview(
                       data: td.text,
                     ),

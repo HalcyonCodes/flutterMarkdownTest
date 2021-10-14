@@ -6,16 +6,6 @@ import './textWidget.dart';
 import './blockQuoteWidget.dart';
 
 class ListWidget extends StatefulWidget {
-  @override
-  _ListWidgetState createState() => _ListWidgetState();
-  bool isFirst;
-  List<Widget> lists = [];
-  md.Element e;
-  StyleSheet st;
-  double width;
-  Map<String, md.Element>? map;
-  bool isInQuote;
-  bool isEnd;
   ListWidget({
     required this.width,
     required this.e,
@@ -28,38 +18,26 @@ class ListWidget extends StatefulWidget {
     lVisitor.visitStar(e);
     map = lVisitor.map; //忽略'_0_'
   }
+
+  md.Element e;
+  bool isEnd;
+  bool isFirst;
+  bool isInQuote;
+  List<Widget> lists = [];
+  Map<String, md.Element>? map;
+  StyleSheet st;
+  double width;
+
+  @override
+  _ListWidgetState createState() => _ListWidgetState();
 }
 
 class _ListWidgetState extends State<ListWidget> {
-  List<Widget> widdgets = [];
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: LayoutBuilder(builder: (context, constrains) {
-        double width = constrains.biggest.width;
-        widdgets = [];
-        bulidByMap(width);
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: widdgets,
-            ),
-            if (!widget.isEnd)
-              SizedBox(
-                height: 16,
-              )
-          ],
-        );
-      }),
-    );
-  }
+  List<Widget> widgets = [];
 
   void bulidByMap(double width) {
+    Widget row;
+    BlockQuoteWidget quote;
     String tagTemp;
     Widget decorationWidget;
     double spaceCount = 0;
@@ -71,14 +49,17 @@ class _ListWidgetState extends State<ListWidget> {
     int currentMapCount = 0;
     String lastTag = 'p';
 
+    //List<Widget> displayWidgt = [];
     widget.map!.forEach((key, value) {
+      bool hasImg = false;
       tagTemp = 'p';
       decorationWidget = SizedBox();
-      if (widdgets.length != 0) widget.isFirst = false;
+      if (widgets.length != 0) widget.isFirst = false;
       List<String> temp = key.split('_');
       int length = temp.length - 2;
-      List<InlineSpan> rowTemp = [];
-
+      List<InlineSpan> rowTemp = []; //存放留白和圆点等装饰
+      //存放显示的元件
+      Widget textWidget = Container();
       bool isQuote = false;
       if (value.children != null) {
         value.children![0].accept(quoteOffsetVisiter);
@@ -104,23 +85,32 @@ class _ListWidgetState extends State<ListWidget> {
                     alignment: PlaceholderAlignment.baseline,
                     child: blackDot()));
               }
+
               double textWidth = width - 28;
-              if (!isQuote)
-                rowTemp.add(
-                  WidgetSpan(
-                      baseline: TextBaseline.alphabetic,
-                      child: Container(
-                        width: textWidth,
-                        child: TextWidget(
-                          e: value,
-                          st: widget.st,
-                          isFirst: widget.isFirst,
-                          isEnd: isEnd,
-                          isInQuote: widget.isInQuote,
-                        ),
-                      ),
-                      alignment: PlaceholderAlignment.baseline),
+
+              if (!isQuote) {
+                WidgetSpan dHeight = WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  alignment: PlaceholderAlignment.baseline,
+                  child:
+                      Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
                 );
+                rowTemp.add(dHeight);
+
+                TextWidget w = TextWidget(
+                  e: onlyPTag(value) ? value : value.children![0] as md.Element,
+                  st: widget.st,
+                  isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
+                  isInList: true,
+                );
+                hasImg = w.hasImg!;
+                textWidget = Container(
+                  width: textWidth,
+                  child: w,
+                );
+              }
               spaceCount = 1;
             }
             break;
@@ -148,21 +138,29 @@ class _ListWidgetState extends State<ListWidget> {
                     child: whitekDot()));
               }
               double textWidth = width - 28 * length;
-              if (!isQuote)
-                rowTemp.add(WidgetSpan(
+              if (!isQuote) {
+                WidgetSpan dHeight = WidgetSpan(
                   baseline: TextBaseline.alphabetic,
-                  child: Container(
-                    width: textWidth,
-                    child: TextWidget(
-                      e: value,
-                      st: widget.st,
-                      isFirst: widget.isFirst,
-                      isEnd: isEnd,
-                      isInQuote: widget.isInQuote,
-                    ),
-                  ),
                   alignment: PlaceholderAlignment.baseline,
-                ));
+                  child:
+                      Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+                );
+                rowTemp.add(dHeight);
+
+                TextWidget w = TextWidget(
+                  e: onlyPTag(value) ? value : value.children![0] as md.Element,
+                  st: widget.st,
+                  isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
+                  isInList: true,
+                );
+                hasImg = w.hasImg!;
+                textWidget = Container(
+                  width: textWidth,
+                  child: w,
+                );
+              }
               spaceCount = 2;
             }
             break;
@@ -198,20 +196,29 @@ class _ListWidgetState extends State<ListWidget> {
                     child: rectBlackDot()));
               }
               double textWidth = width - 28 * length;
-              if (!isQuote)
-                rowTemp.add(WidgetSpan(
-                    baseline: TextBaseline.alphabetic,
-                    alignment: PlaceholderAlignment.baseline,
-                    child: Container(
-                      width: textWidth,
-                      child: TextWidget(
-                        e: value,
-                        st: widget.st,
-                        isFirst: widget.isFirst,
-                        isEnd: isEnd,
-                        isInQuote: widget.isInQuote,
-                      ),
-                    )));
+              if (!isQuote) {
+                WidgetSpan dHeight = WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  alignment: PlaceholderAlignment.baseline,
+                  child:
+                      Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+                );
+                rowTemp.add(dHeight);
+
+                TextWidget w = TextWidget(
+                  e: onlyPTag(value) ? value : value.children![0] as md.Element,
+                  st: widget.st,
+                  isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
+                  isInList: true,
+                );
+                hasImg = w.hasImg!;
+                textWidget = Container(
+                  width: textWidth,
+                  child: w,
+                );
+              }
               spaceCount = 3;
             }
             break;
@@ -255,20 +262,29 @@ class _ListWidgetState extends State<ListWidget> {
                     child: rectBlackDot()));
               }
               double textWidth = width - 28 * length;
-              if (!isQuote)
-                rowTemp.add(WidgetSpan(
-                    baseline: TextBaseline.alphabetic,
-                    alignment: PlaceholderAlignment.baseline,
-                    child: Container(
-                      width: textWidth,
-                      child: TextWidget(
-                        e: value,
-                        st: widget.st,
-                        isFirst: widget.isFirst,
-                        isEnd: isEnd,
-                        isInQuote: widget.isInQuote,
-                      ),
-                    )));
+              if (!isQuote) {
+                WidgetSpan dHeight = WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  alignment: PlaceholderAlignment.baseline,
+                  child:
+                      Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+                );
+                rowTemp.add(dHeight);
+
+                TextWidget w = TextWidget(
+                  e: onlyPTag(value) ? value : value.children![0] as md.Element,
+                  st: widget.st,
+                  isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
+                  isInList: true,
+                );
+                hasImg = w.hasImg!;
+                textWidget = Container(
+                  width: textWidth,
+                  child: w,
+                );
+              }
               spaceCount = 4;
             }
             break;
@@ -297,26 +313,36 @@ class _ListWidgetState extends State<ListWidget> {
                     child: rectBlackDot()));
               }
               double textWidth = width - 28 * length;
-              if (!isQuote)
-                rowTemp.add(WidgetSpan(
-                    baseline: TextBaseline.alphabetic,
-                    alignment: PlaceholderAlignment.baseline,
-                    child: Container(
-                      width: textWidth,
-                      child: TextWidget(
-                        e: value,
-                        st: widget.st,
-                        isFirst: widget.isFirst,
-                        isEnd: isEnd,
-                        isInQuote: widget.isInQuote,
-                      ),
-                    )));
+              if (!isQuote) {
+                WidgetSpan dHeight = WidgetSpan(
+                  baseline: TextBaseline.alphabetic,
+                  alignment: PlaceholderAlignment.baseline,
+                  child:
+                      Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+                );
+                rowTemp.add(dHeight);
+
+                TextWidget w = TextWidget(
+                  e: onlyPTag(value) ? value : value.children![0] as md.Element,
+                  st: widget.st,
+                  isFirst: widget.isFirst,
+                  isEnd: isEnd,
+                  isInQuote: widget.isInQuote,
+                  isInList: true,
+                );
+                hasImg = w.hasImg!;
+                textWidget = Container(
+                  width: textWidth,
+                  child: w,
+                );
+              }
               spaceCount = i + 1;
             }
             break;
         }
       }
 
+      //quote开始
       if (value.children != null) {
         value.children![0].accept(dVisiter);
         if (dVisiter.dve != null) {
@@ -325,6 +351,15 @@ class _ListWidgetState extends State<ListWidget> {
           tagTemp = 'p';
         }
       }
+      quote = BlockQuoteWidget(
+        e: dVisiter.dve!,
+        st: widget.st,
+        isEnd: false,
+        isInQuote: false,
+        isOnlyQuote: false,
+        lastIsP: false,
+        isInList: false, //change
+      );
 
       TextStyle dotStyle = widget.st.normalStyle;
       if (tagTemp == 'blockquote') {
@@ -362,28 +397,63 @@ class _ListWidgetState extends State<ListWidget> {
               dotStyle = widget.st.h6.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
+            case 'img':
+              hasImg = true;
+              dotStyle =
+                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
             default:
               devEle = dotHeightVisiter.dve!;
               break;
           }
         }
+
+        WidgetSpan dHeight = WidgetSpan(
+          baseline: TextBaseline.alphabetic,
+          alignment: PlaceholderAlignment.baseline,
+          child: Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+        );
+        rowTemp.add(dHeight);
+        bool isEnd = false;
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        quote = BlockQuoteWidget(
+          e: dVisiter.dve!,
+          st: widget.st,
+          isEnd: isEnd,
+          isInQuote: false,
+          isOnlyQuote: false,
+          lastIsP: false,
+          isInList: true, //change
+        );
+        hasImg = quote.hasImg!;
+        row = Row(
+            crossAxisAlignment:
+                hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            children: [
+              RichText(
+                softWrap: false, //
+                overflow: TextOverflow.clip,
+                text: TextSpan(
+                  children: rowTemp,
+                ),
+              )
+            ]);
+      } else {
+        row = Row(
+            crossAxisAlignment:
+                hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            children: [
+              RichText(
+                softWrap: false, //
+                overflow: TextOverflow.clip,
+                text: TextSpan(
+                  children: rowTemp,
+                ),
+              ),
+              textWidget,
+            ]);
       }
-
-      rowTemp.add(WidgetSpan(
-        baseline: TextBaseline.alphabetic,
-        alignment: PlaceholderAlignment.baseline,
-        child: Text(
-          '',
-          style: dotStyle,
-        ),
-      ));
-
-      Widget row = RichText(
-        //maxLines: 1, //true
-        softWrap: false, //
-        overflow: TextOverflow.clip,
-        text: TextSpan(children: rowTemp),
-      );
 
       if (tagTemp == 'h1') {
         bool isEnd = false;
@@ -585,11 +655,16 @@ class _ListWidgetState extends State<ListWidget> {
         );
         lastTag = 'h6';
       } else if (tagTemp == 'p') {
-        decorationWidget = row;
+        decorationWidget = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            row,
+          ],
+        );
+
+        //插入图片
         lastTag = 'p';
       } else if (tagTemp == 'blockquote') {
-        bool isEnd = false;
-        if (currentMapCount == mapCount - 1) isEnd = true;
         decorationWidget = Column(
           children: [
             if (lastTag == 'p')
@@ -602,15 +677,7 @@ class _ListWidgetState extends State<ListWidget> {
               children: [
                 row,
                 Expanded(
-                  child: Container(
-                    child: BlockQuoteWidget(
-                        e: dVisiter.dve!,
-                        st: widget.st,
-                        isEnd: isEnd,
-                        isInQuote: false,
-                        isOnlyQuote: false,
-                        lastIsP: false),
-                  ),
+                  child: Container(child: quote),
                 ),
               ],
             ),
@@ -621,9 +688,81 @@ class _ListWidgetState extends State<ListWidget> {
         lastTag = 'p';
       }
 
-      widdgets.add(decorationWidget);
+      widgets.add(decorationWidget);
       currentMapCount++;
     });
+  }
+
+  bool onlyPTag(md.Element e) {
+    DecorationVisitor d = DecorationVisitor();
+    e.children![0].accept(d);
+    if (d.dve != null) {
+      if (d.dve!.tag == 'h1' ||
+          d.dve!.tag == 'h2' ||
+          d.dve!.tag == 'h3' ||
+          d.dve!.tag == 'h4' ||
+          d.dve!.tag == 'h5' ||
+          d.dve!.tag == 'h6') {
+        return false;
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  TextStyle dotHeight(md.Element value, DecorationVisitor dotHeightVisiter) {
+    TextStyle dotStyle = widget.st.normalStyle;
+    if (value.children != null) {
+      value.children![0].accept(dotHeightVisiter);
+      if (dotHeightVisiter.dve != null) {
+        //tagTemp = dVisiter.dve!.tag;
+        // md.Element devEle = dotHeightVisiter.dve!;
+        int i = 0;
+        while (i == 0) {
+          value.children![0].accept(dotHeightVisiter);
+          switch (dotHeightVisiter.dve!.tag) {
+            case 'p':
+              dotStyle =
+                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h1':
+              dotStyle = widget.st.h1.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h2':
+              dotStyle = widget.st.h2.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h3':
+              dotStyle = widget.st.h3.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h4':
+              dotStyle = widget.st.h4.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h5':
+              dotStyle = widget.st.h5.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h6':
+              dotStyle = widget.st.h6.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            default:
+              value = dotHeightVisiter.dve!;
+              break;
+          }
+        }
+      } else {
+        //tagTemp = 'p';
+        dotStyle = widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+      }
+    }
+    return dotStyle;
   }
 
   Widget offsetPlace() {
@@ -720,10 +859,36 @@ class _ListWidgetState extends State<ListWidget> {
       ],
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: LayoutBuilder(builder: (context, constrains) {
+        double width = constrains.biggest.width;
+        widgets = [];
+        bulidByMap(width);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: widgets,
+            ),
+            if (!widget.isEnd)
+              SizedBox(
+                height: 16,
+              )
+          ],
+        );
+      }),
+    );
+  }
 }
 
 class ListNodeVisitor implements md.NodeVisitor {
-  Map<String, md.Element> map = {};
   ListNodeVisitor() {
     map = {};
     index = 0;
@@ -734,28 +899,14 @@ class ListNodeVisitor implements md.NodeVisitor {
     isFirst = true;
   }
 
-  int index = 0;
-
-  String key = '0_0';
-  int maxKeyLength = 0;
   String currentKey = '';
-  List<String> keyTemp = [];
+  int index = 0;
   bool isFirst = true;
   bool isSameLevel = false;
-
-  void visitStar(md.Element e) {
-    e.accept(this);
-  }
-
-  void visit(
-    List<md.Node>? nodes,
-  ) {
-    isSameLevel = false;
-    nodes!.forEach((e) {
-      e.accept(this);
-      //isSameLevel = true;
-    });
-  }
+  String key = '0_0';
+  List<String> keyTemp = [];
+  Map<String, md.Element> map = {};
+  int maxKeyLength = 0;
 
   @override
   void visitElementAfter(md.Element element) {}
@@ -985,6 +1136,20 @@ class ListNodeVisitor implements md.NodeVisitor {
 
   @override
   void visitText(md.Text text) {}
+
+  void visitStar(md.Element e) {
+    e.accept(this);
+  }
+
+  void visit(
+    List<md.Node>? nodes,
+  ) {
+    isSameLevel = false;
+    nodes!.forEach((e) {
+      e.accept(this);
+      //isSameLevel = true;
+    });
+  }
 }
 
 class DecorationVisitor implements md.NodeVisitor {

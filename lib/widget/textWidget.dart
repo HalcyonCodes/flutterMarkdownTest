@@ -1,10 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown/markdown.dart' as md;
-
 import '../style/styleSheet.dart';
+import 'richTextWidget.dart';
+import './imgWidget.dart';
 
-class TextWidget extends StatefulWidget {
+class TextWidget extends StatelessWidget {
   double paddingTop = 0.0;
   double paddingBottom = 0.0;
   double paddingLeft = 0.0;
@@ -15,14 +16,17 @@ class TextWidget extends StatefulWidget {
   double marginLeft = 0.0;
   double marginright = 0.0;
   bool isFirst;
+  bool? hasImg;
 
-  List<TextSpan> texts = [];
+  List<Widget> widgets = [];
+
   md.Element e;
   StyleSheet st;
 
   String? lastTag;
   bool isEnd;
-  bool isInQuote;
+  bool? isInQuote;
+  bool? isInList;
 
   TextWidget({
     this.lastTag,
@@ -30,37 +34,95 @@ class TextWidget extends StatefulWidget {
     required this.st,
     required this.isFirst,
     required this.isEnd,
-    required this.isInQuote,
+    this.isInQuote,
+    this.isInList,
   }) {
-    paddingTop = 0.0;
-    paddingBottom = 0.0;
-    paddingLeft = 0.0;
-    paddingright = 0.0;
-
-    marginTop = 0.0;
-    marginBottom = 0.0;
-    marginLeft = 0.0;
-    marginright = 0.0;
-    TextNodeVisitor tVisitor = TextNodeVisitor(st: st, isInQuote: isInQuote);
-    tVisitor.visit(e.children);
-    texts = tVisitor.textSpans;
-    st.fatherTextStyle = st.normalStyle;
-    if (isInQuote)
-      st.fatherTextStyle = st.fatherTextStyle!.copyWith(
-          fontStyle: FontStyle.italic, color: Color.fromRGBO(102, 102, 102, 1));
+    hasImg = false;
+    selectFatherStyle();
+    TextNodeVisitor visitor = TextNodeVisitor(
+        e: e,
+        st: st,
+        isInQuote: isInQuote!,
+        isFirst: isFirst,
+        isEnd: isEnd,
+        hasImg: hasImg);
+    widgets = visitor.rowWidgets;
+    hasImg = visitor.hasImg;
   }
 
-  @override
-  _TextWidgetState createState() => _TextWidgetState();
-}
-
-class _TextWidgetState extends State<TextWidget> {
-  @override
-  void initState() {
-    super.initState();
+  void selectFatherStyle() {
+    switch (e.tag) {
+      case 'h1':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h1.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h1;
+        }
+        break;
+      case 'h2':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h2.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h2;
+        }
+        break;
+      case 'h3':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h3.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h3;
+        }
+        break;
+      case 'h4':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h4.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h4;
+        }
+        break;
+      case 'h5':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h5.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h5;
+        }
+        break;
+      case 'h6':
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.h6.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.h6;
+        }
+        break;
+      default:
+        {
+          st.fatherTextStyle = isInQuote!
+              ? st.normalStyle.copyWith(
+                  fontStyle: FontStyle.italic,
+                  color: Color.fromRGBO(102, 102, 102, 1),
+                )
+              : st.normalStyle;
+        }
+    }
   }
-
-  //md.Element? eTemp;
 
   @override
   Widget build(BuildContext context) {
@@ -68,29 +130,26 @@ class _TextWidgetState extends State<TextWidget> {
     return Container(
       alignment: Alignment.topLeft,
       margin: EdgeInsets.only(
-        top: widget.marginTop,
-        left: widget.marginLeft,
-        right: widget.marginright,
-        bottom: widget.marginBottom,
+        top: isInList! ? 0 : marginTop,
+        left: isInList! ? 0 : marginLeft,
+        right: isInList! ? 0 : marginright,
+        bottom: isInList! ? 0 : marginBottom,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            //width: 100,
-            alignment: Alignment.topLeft,
-            padding: EdgeInsets.only(
-                bottom: widget.paddingBottom,
-                top: widget.paddingTop,
-                left: widget.paddingLeft,
-                right: widget.paddingright),
-            child: RichText(
-              softWrap: true,
-              textAlign: TextAlign.start,
-              text: TextSpan(children: widget.texts),
-            ),
-          ),
-          if (widget.e.tag == 'h1' || widget.e.tag == 'h2')
+              alignment: Alignment.topLeft,
+              padding: EdgeInsets.only(
+                  bottom: isInList! ? 0 : paddingBottom,
+                  top: isInList! ? 0 : paddingTop,
+                  left: isInList! ? 0 : paddingLeft,
+                  right: isInList! ? 0 : paddingright),
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: widgets,
+              )),
+          if (e.tag == 'h1' && !isInList! || e.tag == 'h2' && !isInList!)
             Divider(
               height: 0.0,
               indent: 0.0,
@@ -105,134 +164,140 @@ class _TextWidgetState extends State<TextWidget> {
   void decoration() {
     //eTemp = de;
 
-    switch (widget.e.tag) {
+    switch (e.tag) {
       case 'li':
         {}
         break;
       case 'h1':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 31.5 - 16;
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 31.5 - 16;
             } else {
-              widget.marginTop = 31.5;
+              marginTop = 31.5;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 9.45;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 9.45;
         }
         break;
       case 'h2':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 24.5 - 16;
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 24.5 - 16;
             } else {
-              widget.marginTop = 24.5;
+              marginTop = 24.5;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 7.35;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 7.35;
         }
         break;
       case 'h3':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 21 - 16;
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 21 - 16;
             } else {
-              widget.marginTop = 21;
+              marginTop = 21;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 0;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 0;
         }
         break;
       case 'h4':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 17.500 - 16;
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 17.500 - 16;
             } else {
-              widget.marginTop = 17.500;
+              marginTop = 17.500;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 0;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 0;
         }
         break;
       case 'h5':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 0; //14 -16
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 0; //14 -16
             } else {
-              widget.marginTop = 14;
+              marginTop = 14;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 0;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 0;
         }
         break;
       case 'h6':
         {
-          if (widget.isFirst) {
-            widget.marginTop = 0;
+          if (isFirst) {
+            marginTop = 0;
           } else {
-            if (widget.lastTag == 'h1' ||
-                widget.lastTag == 'h2' ||
-                widget.lastTag == 'h3' ||
-                widget.lastTag == 'h4' ||
-                widget.lastTag == 'h5' ||
-                widget.lastTag == 'h6' ||
-                widget.lastTag == 'blockquote') {
-              widget.marginTop = 0; //14-16
+            if (lastTag == 'h1' ||
+                lastTag == 'h2' ||
+                lastTag == 'h3' ||
+                lastTag == 'h4' ||
+                lastTag == 'h5' ||
+                lastTag == 'h6' ||
+                lastTag == 'blockquote' ||
+                lastTag == 'ul') {
+              marginTop = 0; //14-16
             } else {
-              widget.marginTop = 14;
+              marginTop = 14;
             }
           }
-          widget.marginBottom = widget.isEnd ? 0 : 16;
-          widget.paddingBottom = 0;
+          marginBottom = isEnd ? 0 : 16;
+          paddingBottom = 0;
         }
         break;
     }
@@ -240,31 +305,34 @@ class _TextWidgetState extends State<TextWidget> {
 }
 
 class TextNodeVisitor implements md.NodeVisitor {
+  TextStyle? fatherStyleTemp;
+  List<Widget> rowWidgets = [];
+  md.Element? eleTemp;
+  md.Element e;
   StyleSheet st;
-  TextNodeVisitor({required this.st, required this.isInQuote}) {
-    styleTemps.add(st.fatherTextStyle!);
-    CurrentStyle = styleTemps.last;
+  bool isInQuote;
+  bool isFirst;
+  bool isEnd;
+  bool? hasImg;
+
+  List<md.Node> nodes = [];
+
+  TextNodeVisitor({
+    required this.e,
+    required this.st,
+    required this.isInQuote,
+    required this.isFirst,
+    required this.isEnd,
+    required this.hasImg,
+  }) {
+    fatherStyleTemp = st.fatherTextStyle;
+    eleTemp = md.Element.withTag(e.tag);
+    visit(e.children);
   }
 
-  List<TextStyle> styleTemps = [];
-  TextStyle? CurrentStyle;
-
-  List<TextSpan> textSpans = [];
-
-  TapGestureRecognizer? tapGes = null;
-
-  Function()? tagAOntap;
-
-  Function(bool)? tagAOnhover;
-
-  bool isInTagA = false;
-
-  int index = 0;
-
-  bool isInQuote;
-
   void visit(List<md.Node>? nodes) {
-    nodes!.forEach((e) {
+    this.nodes = nodes!;
+    nodes.forEach((e) {
       e.accept(this);
     });
   }
@@ -275,182 +343,102 @@ class TextNodeVisitor implements md.NodeVisitor {
   @override
   bool visitElementBefore(md.Element element) {
     if (element.tag == 'br') {
-      TextSpan TextBr = TextSpan(
-        text: '\n',
-      );
-      textSpans.add(TextBr);
-      return false;
+      if (eleTemp!.children!.length != 0) {
+        rowWidgets.add(buidRichText());
+        eleTemp!.children!.clear();
+        st.fatherTextStyle = fatherStyleTemp;
+      }
+      rowWidgets.add(Row(
+        children: [SizedBox()],
+      ));
     }
-    if (element.tag == 'ul') return false;
+
+    if (element.tag == 'img') {
+      hasImg = true;
+      if (eleTemp!.children!.length != 0) {
+        rowWidgets.add(buidRichText());
+        eleTemp!.children!.clear();
+        st.fatherTextStyle = fatherStyleTemp;
+      }
+
+      String src = element.attributes['src'].toString();
+      rowWidgets.add(ImgWidget(url: src));
+    }
     if (element.tag == 'a') {
-      isInTagA = true;
-      tapGes = TapGestureRecognizer();
-
-      tagAOntap = () {
-        //打开链接代码
-        print(element.tag);
-      };
-      tapGes!..onTap = tagAOntap;
+      TextABeforeImgVisitor vistor = TextABeforeImgVisitor();
+      String clickUrl = element.attributes['src'].toString();
+      element.children![0].accept(vistor);
+      if (vistor.node != null) {
+        if (vistor.node!.tag == 'img') {
+          if (eleTemp!.children!.length != 0) {
+            rowWidgets.add(buidRichText());
+            eleTemp!.children!.clear();
+            st.fatherTextStyle = fatherStyleTemp;
+          }
+          String url = vistor.node!.attributes['src'].toString();
+          rowWidgets.add(ImgWidget(
+            url: url,
+            clickUrl: clickUrl,
+          ));
+        } else {
+          eleTemp!.children!.add(element);
+        }
+      } else {
+        eleTemp!.children!.add(element);
+      }
+    }
+    if (element.tag != 'img' && element.tag != 'a' && element.tag != 'br') {
+      eleTemp!.children!.add(element);
     }
 
-    if (element.children != null) {
-      CurrentStyle = styleSelect(element.tag);
-      styleTemps.add(st.fatherTextStyle!);
-      visit(element.children);
-      if (isInTagA == true && element.tag == 'a') isInTagA = false;
-      styleTemps.removeLast();
+    if (element == nodes.last && eleTemp!.children!.length != 0) {
+      rowWidgets.add(buidRichText());
+      eleTemp!.children!.clear();
+      st.fatherTextStyle = fatherStyleTemp;
     }
-    CurrentStyle = styleTemps.last;
-    st.fatherTextStyle = CurrentStyle;
-    return false; //为false时不解析子节点的text节点
+    return false;
   }
 
   @override
   void visitText(md.Text text) {
-    if (isInTagA == false) {
-      tapGes = null;
-    }
-    TextSpan temp = TextSpan(
-      text: text.text,
-      style: CurrentStyle,
-      recognizer: tapGes,
-    );
+    String string = text.textContent.replaceAll(RegExp(r'\n'), 'd'); //消除换行符
+    md.Text rText = md.Text(string);
+    eleTemp!.children!.add(rText);
 
-    textSpans.add(temp);
+    if (text == nodes.last && eleTemp!.children!.length != 0) {
+      rowWidgets.add(buidRichText());
+      eleTemp!.children!.clear();
+      st.fatherTextStyle = fatherStyleTemp;
+    }
   }
 
-  TextStyle styleSelect(String tag) {
-    switch (tag) {
-      case 'p':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.normalStyle;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'li':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.normalStyle;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h1':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h1;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h2':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h2;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h3':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h3;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h4':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h4;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h5':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h5;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'h6':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.h6;
-          if (isInQuote)
-            t = t.copyWith(
-              fontStyle: FontStyle.italic,
-              color: Color.fromRGBO(102, 102, 102, 1),
-            );
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'a':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.a!;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'em':
-        {
-          //字体改成italy
-          st.setStyleSheet();
-          TextStyle t = st.em!;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'strong':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.strong!;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
-          st.fatherTextStyle = t;
-          return t;
-        }
-      case 'del':
-        {
-          st.setStyleSheet();
-          TextStyle t = st.del!;
-          if (isInQuote) t = t.copyWith(fontStyle: FontStyle.italic);
-          st.fatherTextStyle = t;
-          return t;
-        }
-    }
-    return st.normalStyle;
+  Widget buidRichText() {
+    RichTextNodeVisitor tVisitor =
+        RichTextNodeVisitor(st: st, isInQuote: isInQuote);
+    tVisitor.visit(eleTemp!.children);
+    List<TextSpan> texts = [];
+    texts = tVisitor.textSpans;
+    st.fatherTextStyle = st.normalStyle;
+    if (isInQuote)
+      st.fatherTextStyle = st.fatherTextStyle!.copyWith(
+          fontStyle: FontStyle.italic, color: Color.fromRGBO(102, 102, 102, 1));
+    return RichText(text: TextSpan(children: texts));
   }
+}
+
+class TextABeforeImgVisitor implements md.NodeVisitor {
+  List<Widget> rowWidgets = [];
+  md.Element? node;
+
+  @override
+  void visitElementAfter(md.Element element) {}
+
+  @override
+  bool visitElementBefore(md.Element element) {
+    node = element;
+    return false;
+  }
+
+  @override
+  void visitText(md.Text text) {}
 }

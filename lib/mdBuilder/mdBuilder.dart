@@ -5,6 +5,8 @@ import 'package:markdown/markdown.dart' as md;
 import '../widget/textWidget.dart';
 import '../widget/listWidget.dart';
 import '../widget/blockQuoteWidget.dart';
+import '../widget/pWidget.dart';
+import '../widget/imgWidget.dart';
 
 class MdBuilder implements md.NodeVisitor {
   String data;
@@ -57,6 +59,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -75,6 +78,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -93,6 +97,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -111,6 +116,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -129,6 +135,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -147,6 +154,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -165,6 +173,7 @@ class MdBuilder implements md.NodeVisitor {
             isFirst: isFirst,
             isEnd: false,
             isInQuote: false,
+            isInList: false,
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
@@ -186,6 +195,7 @@ class MdBuilder implements md.NodeVisitor {
             isEnd: isEnd,
           );
           bWidgets.add(listWidget);
+          lastTag = e.tag;
           lastIsP = false;
         }
         break;
@@ -194,8 +204,8 @@ class MdBuilder implements md.NodeVisitor {
           //bool isEnd = false;
           //if (e == astNodes!.last) isEnd = true;
           if (e.children!.length == 1) {
-            QuoteNodeVisitor qVister =
-                QuoteNodeVisitor(st: styleSheet!, width: width);
+            QuoteNodeVisitor qVister = QuoteNodeVisitor(
+                st: styleSheet!, width: width, isInList: false);
             qVister.visit(e.children);
             isOnlyQuote = qVister.isOnlyQuote;
           }
@@ -211,6 +221,7 @@ class MdBuilder implements md.NodeVisitor {
             isOnlyQuote: isOnlyQuote,
             lastIsP: lastIsP,
             //quoteColor: Color.from,
+            isInList: false,
           );
           bWidgets.add(blockQuoteWidget);
         }

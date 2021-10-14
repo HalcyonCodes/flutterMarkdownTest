@@ -4,7 +4,7 @@ import '../style/styleSheet.dart';
 import './listWidget.dart';
 import './textWidget.dart';
 
-class BlockQuoteWidget extends StatefulWidget {
+class BlockQuoteWidget extends StatelessWidget {
   Color? quoteColor;
   bool isEnd;
   md.Element e;
@@ -13,55 +13,54 @@ class BlockQuoteWidget extends StatefulWidget {
   bool isInQuote;
   bool isOnlyQuote;
   bool lastIsP;
+  bool isInList;
+  bool? hasImg;
 
-  BlockQuoteWidget({
-    this.quoteColor,
-    required this.e,
-    required this.st,
-    //required this.isFirst,
-    required this.isEnd,
-    required this.isInQuote,
-    required this.isOnlyQuote,
-    required this.lastIsP,
-  }) {
+  BlockQuoteWidget(
+      {this.quoteColor,
+      required this.e,
+      required this.st,
+      //required this.isFirst,
+      required this.isEnd,
+      required this.isInQuote,
+      required this.isOnlyQuote,
+      required this.lastIsP,
+      required this.isInList}) {
     if (quoteColor == null) {
       quoteColor = Color.fromRGBO(221, 221, 221, 1.0);
     }
   }
 
-  @override
-  _BlockQuoteWidgetState createState() => _BlockQuoteWidgetState();
-}
-
-class _BlockQuoteWidgetState extends State<BlockQuoteWidget> {
   List<Widget> childrenWidget = [];
   @override
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(
-            left: 0,
-            right: 0,
-            top: widget.lastIsP ? 16 : 0,
-            bottom: widget.isEnd ? 0 : 16),
+            left: 0, right: 0, top: lastIsP ? 16 : 0, bottom: isEnd ? 0 : 16),
         padding: EdgeInsets.only(
             left: 20,
             right: 15,
             top: 0,
-            bottom: widget.isOnlyQuote ? (widget.isInQuote ? 2 : 0) : 2),
+            bottom: isOnlyQuote ? (isInQuote ? 2 : 0) : 2),
         decoration: BoxDecoration(
             border: Border(
           left: BorderSide(
-            color: widget.quoteColor!,
+            color: quoteColor!,
             width: 4.0,
           ),
         )),
         child: LayoutBuilder(
           builder: (context, constraints) {
             double width = constraints.biggest.width;
-            QuoteNodeVisitor quote =
-                QuoteNodeVisitor(st: widget.st, width: width);
-            quote.visit(widget.e.children);
+            QuoteNodeVisitor quote = QuoteNodeVisitor(
+              st: st,
+              width: width,
+              isInList: isInList,
+            );
+            quote.visit(e.children);
             List<Widget> widgets = quote.widgetsTemp;
+            hasImg = quote.hasImg!;
+            //hasImg = true;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -80,8 +79,15 @@ class QuoteNodeVisitor implements md.NodeVisitor {
   List<md.Node> nodes = [];
   bool isOnlyQuote = false;
   bool lastIsP = false;
+  bool isInList;
 
-  QuoteNodeVisitor({required this.st, required this.width});
+  bool? hasImg;
+
+  QuoteNodeVisitor({
+    required this.st,
+    required this.width,
+    required this.isInList,
+  });
 
   void visit(List<md.Node>? nodes) {
     this.nodes = nodes!;
@@ -116,14 +122,17 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = true;
@@ -139,14 +148,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -162,14 +173,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -185,14 +198,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -208,14 +223,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -231,14 +248,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -255,14 +274,16 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget textWidget = TextWidget(
+          TextWidget textWidget = TextWidget(
             lastTag: lastTag,
             e: e,
             st: st,
             isFirst: isFirst,
             isEnd: isEnd,
             isInQuote: true,
+            isInList: isInList,
           );
+          hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
           lastIsP = false;
@@ -313,6 +334,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             //quoteColor: Color.from,
             isOnlyQuote: isOnlyQuote,
             lastIsP: lastIsP,
+            isInList: isInList,
           );
           widgetsTemp.add(blockQuoteWidget);
           lastIsP = false;

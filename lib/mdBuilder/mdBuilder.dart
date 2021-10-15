@@ -191,7 +191,7 @@ class MdBuilder implements md.NodeVisitor {
             st: styleSheet!,
             isFirst: isFirst,
             width: width,
-            isInQuote: false,
+            isInQuote: true,
             isEnd: isEnd,
           );
           bWidgets.add(listWidget);
@@ -222,6 +222,7 @@ class MdBuilder implements md.NodeVisitor {
             lastIsP: lastIsP,
             //quoteColor: Color.from,
             isInList: false,
+            width: width,
           );
           bWidgets.add(blockQuoteWidget);
         }

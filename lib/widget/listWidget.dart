@@ -5,7 +5,7 @@ import 'package:markdown/markdown.dart' as md;
 import './textWidget.dart';
 import './blockQuoteWidget.dart';
 
-class ListWidget extends StatefulWidget {
+class ListWidget extends StatelessWidget {
   ListWidget({
     required this.width,
     required this.e,
@@ -14,9 +14,11 @@ class ListWidget extends StatefulWidget {
     required this.isInQuote,
     required this.isEnd,
   }) {
+    hasImg = false;
     ListNodeVisitor lVisitor = ListNodeVisitor();
     lVisitor.visitStar(e);
     map = lVisitor.map; //忽略'_0_'
+    hasImg = DetermineImg();
   }
 
   md.Element e;
@@ -27,13 +29,55 @@ class ListWidget extends StatefulWidget {
   Map<String, md.Element>? map;
   StyleSheet st;
   double width;
-
-  @override
-  _ListWidgetState createState() => _ListWidgetState();
-}
-
-class _ListWidgetState extends State<ListWidget> {
+  bool? hasImg;
   List<Widget> widgets = [];
+
+  bool DetermineImg() {
+    DecorationVisitor dVisiter = DecorationVisitor();
+    bool hasImg;
+    bool result = false;
+    map!.forEach((key, value) {
+      bool isQuote = false;
+
+      if (value.children != null) {
+        value.children![0].accept(dVisiter);
+        if (dVisiter.dve != null)
+          isQuote = dVisiter.dve!.tag == 'blockquote' ? true : false;
+      }
+      if (!isQuote) {
+        TextWidget w = TextWidget(
+          e: onlyPTag(value) ? value : value.children![0] as md.Element,
+          st: st,
+          isFirst: false,
+          isEnd: false,
+          isInQuote: false,
+          isInList: true,
+        );
+        hasImg = w.hasImg!;
+        if (hasImg == true) {
+          result = true;
+          return;
+        }
+      } else if (isQuote) {
+        BlockQuoteWidget quote = BlockQuoteWidget(
+          e: dVisiter.dve!,
+          st: st,
+          isEnd: isEnd,
+          isInQuote: false,
+          isOnlyQuote: false,
+          lastIsP: false,
+          isInList: true,
+          width: width, //change
+        );
+        if (quote.hasImg == true) {
+          result = true;
+          return;
+        }
+      }
+    });
+
+    return result;
+  }
 
   void bulidByMap(double width) {
     Widget row;
@@ -45,16 +89,18 @@ class _ListWidgetState extends State<ListWidget> {
     DecorationVisitor quoteOffsetVisiter = DecorationVisitor();
     DecorationVisitor dotHeightVisiter = DecorationVisitor();
 
-    int mapCount = widget.map!.length;
+    int mapCount = map!.length;
     int currentMapCount = 0;
     String lastTag = 'p';
 
+    double quoteWidth = width;
+
     //List<Widget> displayWidgt = [];
-    widget.map!.forEach((key, value) {
+    map!.forEach((key, value) {
       bool hasImg = false;
       tagTemp = 'p';
       decorationWidget = SizedBox();
-      if (widgets.length != 0) widget.isFirst = false;
+      if (widgets.length != 0) isFirst = false;
       List<String> temp = key.split('_');
       int length = temp.length - 2;
       List<InlineSpan> rowTemp = []; //存放留白和圆点等装饰
@@ -67,7 +113,8 @@ class _ListWidgetState extends State<ListWidget> {
           isQuote = quoteOffsetVisiter.dve!.tag == 'blockquote' ? true : false;
       }
 
-      if (length * 28 >= widget.width) {
+      if (length * 28 >= width) {
+        quoteWidth = width - length * 28;
       } else {
         switch (length) {
           case 1:
@@ -99,10 +146,10 @@ class _ListWidgetState extends State<ListWidget> {
 
                 TextWidget w = TextWidget(
                   e: onlyPTag(value) ? value : value.children![0] as md.Element,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
+                  st: st,
+                  isFirst: isFirst,
                   isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
+                  isInQuote: isInQuote,
                   isInList: true,
                 );
                 hasImg = w.hasImg!;
@@ -149,10 +196,10 @@ class _ListWidgetState extends State<ListWidget> {
 
                 TextWidget w = TextWidget(
                   e: onlyPTag(value) ? value : value.children![0] as md.Element,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
+                  st: st,
+                  isFirst: isFirst,
                   isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
+                  isInQuote: isInQuote,
                   isInList: true,
                 );
                 hasImg = w.hasImg!;
@@ -207,10 +254,10 @@ class _ListWidgetState extends State<ListWidget> {
 
                 TextWidget w = TextWidget(
                   e: onlyPTag(value) ? value : value.children![0] as md.Element,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
+                  st: st,
+                  isFirst: isFirst,
                   isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
+                  isInQuote: isInQuote,
                   isInList: true,
                 );
                 hasImg = w.hasImg!;
@@ -273,10 +320,10 @@ class _ListWidgetState extends State<ListWidget> {
 
                 TextWidget w = TextWidget(
                   e: onlyPTag(value) ? value : value.children![0] as md.Element,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
+                  st: st,
+                  isFirst: isFirst,
                   isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
+                  isInQuote: isInQuote,
                   isInList: true,
                 );
                 hasImg = w.hasImg!;
@@ -324,10 +371,10 @@ class _ListWidgetState extends State<ListWidget> {
 
                 TextWidget w = TextWidget(
                   e: onlyPTag(value) ? value : value.children![0] as md.Element,
-                  st: widget.st,
-                  isFirst: widget.isFirst,
+                  st: st,
+                  isFirst: isFirst,
                   isEnd: isEnd,
-                  isInQuote: widget.isInQuote,
+                  isInQuote: isInQuote,
                   isInList: true,
                 );
                 hasImg = w.hasImg!;
@@ -351,109 +398,22 @@ class _ListWidgetState extends State<ListWidget> {
           tagTemp = 'p';
         }
       }
-      quote = BlockQuoteWidget(
-        e: dVisiter.dve!,
-        st: widget.st,
-        isEnd: false,
-        isInQuote: false,
-        isOnlyQuote: false,
-        lastIsP: false,
-        isInList: false, //change
-      );
 
-      TextStyle dotStyle = widget.st.normalStyle;
-      if (tagTemp == 'blockquote') {
-        md.Element devEle = dVisiter.dve!;
-        int i = 0;
-        while (i == 0) {
-          devEle.children![0].accept(dotHeightVisiter);
-          switch (dotHeightVisiter.dve!.tag) {
-            case 'p':
-              dotStyle =
-                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h1':
-              dotStyle = widget.st.h1.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h2':
-              dotStyle = widget.st.h2.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h3':
-              dotStyle = widget.st.h3.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h4':
-              dotStyle = widget.st.h4.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h5':
-              dotStyle = widget.st.h5.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h6':
-              dotStyle = widget.st.h6.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'img':
-              hasImg = true;
-              dotStyle =
-                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            default:
-              devEle = dotHeightVisiter.dve!;
-              break;
-          }
-        }
+      TextStyle dotStyle = st.normalStyle;
 
-        WidgetSpan dHeight = WidgetSpan(
-          baseline: TextBaseline.alphabetic,
-          alignment: PlaceholderAlignment.baseline,
-          child: Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
-        );
-        rowTemp.add(dHeight);
-        bool isEnd = false;
-        if (currentMapCount == mapCount - 1) isEnd = true;
-        quote = BlockQuoteWidget(
-          e: dVisiter.dve!,
-          st: widget.st,
-          isEnd: isEnd,
-          isInQuote: false,
-          isOnlyQuote: false,
-          lastIsP: false,
-          isInList: true, //change
-        );
-        hasImg = quote.hasImg!;
-        row = Row(
-            crossAxisAlignment:
-                hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-            children: [
-              RichText(
-                softWrap: false, //
-                overflow: TextOverflow.clip,
-                text: TextSpan(
-                  children: rowTemp,
-                ),
-              )
-            ]);
-      } else {
-        row = Row(
-            crossAxisAlignment:
-                hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
-            children: [
-              RichText(
-                softWrap: false, //
-                overflow: TextOverflow.clip,
-                text: TextSpan(
-                  children: rowTemp,
-                ),
+      row = Row(
+          crossAxisAlignment:
+              hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+          children: [
+            RichText(
+              softWrap: false, //
+              overflow: TextOverflow.clip,
+              text: TextSpan(
+                children: rowTemp,
               ),
-              textWidget,
-            ]);
-      }
+            ),
+            textWidget,
+          ]);
 
       if (tagTemp == 'h1') {
         bool isEnd = false;
@@ -474,7 +434,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -515,7 +475,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -556,7 +516,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -585,7 +545,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -614,7 +574,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -643,7 +603,7 @@ class _ListWidgetState extends State<ListWidget> {
         decorationWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (!widget.isFirst)
+            if (!isFirst)
               SizedBox(
                 height: marginTop,
               ),
@@ -665,21 +625,100 @@ class _ListWidgetState extends State<ListWidget> {
         //插入图片
         lastTag = 'p';
       } else if (tagTemp == 'blockquote') {
+        md.Element devEle = dVisiter.dve!;
+        int i = 0;
+        while (i == 0) {
+          devEle.children![0].accept(dotHeightVisiter);
+          switch (dotHeightVisiter.dve!.tag) {
+            case 'p':
+              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h1':
+              dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h2':
+              dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h3':
+              dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h4':
+              dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h5':
+              dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'h6':
+              dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            case 'img':
+              hasImg = true;
+              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              i = 1;
+              break;
+            default:
+              devEle = dotHeightVisiter.dve!;
+              break;
+          }
+        }
+
+        WidgetSpan dHeight = WidgetSpan(
+          baseline: TextBaseline.alphabetic,
+          alignment: PlaceholderAlignment.baseline,
+          child: Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+        );
+        rowTemp.add(dHeight);
+        bool isEnd = false;
+        if (currentMapCount == mapCount - 1) isEnd = true;
+        quote = BlockQuoteWidget(
+          e: dVisiter.dve!,
+          st: st,
+          isEnd: isEnd,
+          isInQuote: false,
+          isOnlyQuote: false,
+          lastIsP: false,
+          isInList: false,
+          width: quoteWidth, //change
+        );
+        hasImg = quote.hasImg!;
+        row = Row(
+            crossAxisAlignment:
+                hasImg ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+            children: [
+              RichText(
+                softWrap: false, //
+                overflow: TextOverflow.clip,
+                text: TextSpan(
+                  children: rowTemp,
+                ),
+              )
+            ]);
         decorationWidget = Column(
           children: [
             if (lastTag == 'p')
               SizedBox(
                 height: 6,
               ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                row,
-                Expanded(
-                  child: Container(child: quote),
-                ),
-              ],
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: hasImg
+                    ? CrossAxisAlignment.center
+                    : CrossAxisAlignment.start,
+                children: [
+                  row,
+                  Expanded(
+                    child: Container(child: quote),
+                  ),
+                ],
+              ),
             ),
           ],
         );
@@ -713,7 +752,7 @@ class _ListWidgetState extends State<ListWidget> {
   }
 
   TextStyle dotHeight(md.Element value, DecorationVisitor dotHeightVisiter) {
-    TextStyle dotStyle = widget.st.normalStyle;
+    TextStyle dotStyle = st.normalStyle;
     if (value.children != null) {
       value.children![0].accept(dotHeightVisiter);
       if (dotHeightVisiter.dve != null) {
@@ -724,32 +763,31 @@ class _ListWidgetState extends State<ListWidget> {
           value.children![0].accept(dotHeightVisiter);
           switch (dotHeightVisiter.dve!.tag) {
             case 'p':
-              dotStyle =
-                  widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h1':
-              dotStyle = widget.st.h1.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h2':
-              dotStyle = widget.st.h2.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h3':
-              dotStyle = widget.st.h3.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h4':
-              dotStyle = widget.st.h4.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h5':
-              dotStyle = widget.st.h5.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             case 'h6':
-              dotStyle = widget.st.h6.copyWith(fontStyle: FontStyle.italic);
+              dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
               i = 1;
               break;
             default:
@@ -759,7 +797,7 @@ class _ListWidgetState extends State<ListWidget> {
         }
       } else {
         //tagTemp = 'p';
-        dotStyle = widget.st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+        dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
       }
     }
     return dotStyle;
@@ -877,7 +915,7 @@ class _ListWidgetState extends State<ListWidget> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: widgets,
             ),
-            if (!widget.isEnd)
+            if (isEnd)
               SizedBox(
                 height: 16,
               )

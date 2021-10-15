@@ -15,6 +15,7 @@ class BlockQuoteWidget extends StatelessWidget {
   bool lastIsP;
   bool isInList;
   bool? hasImg;
+  double width;
 
   BlockQuoteWidget(
       {this.quoteColor,
@@ -25,10 +26,19 @@ class BlockQuoteWidget extends StatelessWidget {
       required this.isInQuote,
       required this.isOnlyQuote,
       required this.lastIsP,
-      required this.isInList}) {
+      required this.isInList,
+      required this.width}) {
     if (quoteColor == null) {
       quoteColor = Color.fromRGBO(221, 221, 221, 1.0);
     }
+    hasImg = false;
+    QuoteNodeVisitor quote = QuoteNodeVisitor(
+      st: st,
+      width: width,
+      isInList: isInList,
+    );
+    quote.visit(e.children);
+    hasImg = quote.hasImg!;
   }
 
   List<Widget> childrenWidget = [];
@@ -60,6 +70,7 @@ class BlockQuoteWidget extends StatelessWidget {
             quote.visit(e.children);
             List<Widget> widgets = quote.widgetsTemp;
             hasImg = quote.hasImg!;
+            
             //hasImg = true;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,7 +310,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget listWidget = ListWidget(
+          ListWidget listWidget = ListWidget(
             e: e,
             st: st,
             isFirst: isFirst,
@@ -307,6 +318,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isEnd: isEnd,
           );
+          hasImg = listWidget.hasImg!;
           widgetsTemp.add(listWidget);
           lastIsP = false;
           lastTag = e.tag;
@@ -316,6 +328,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
       case 'blockquote':
         {
           //bool isFirst = false;
+          hasImg = false;
           bool isEnd = false;
           //if (widgetsTemp.length == 0) isFirst = true;
           if (e == this.nodes.last) isEnd = true;
@@ -325,7 +338,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             fontStyle: FontStyle.italic,
             color: Color.fromRGBO(102, 102, 102, 1),
           );
-          Widget blockQuoteWidget = BlockQuoteWidget(
+          BlockQuoteWidget blockQuoteWidget = BlockQuoteWidget(
             e: e,
             st: st,
             //isFirst: isFirst,
@@ -335,7 +348,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isOnlyQuote: isOnlyQuote,
             lastIsP: lastIsP,
             isInList: isInList,
+            width: width,
           );
+          hasImg = blockQuoteWidget.hasImg!;
           widgetsTemp.add(blockQuoteWidget);
           lastIsP = false;
           lastTag = e.tag;

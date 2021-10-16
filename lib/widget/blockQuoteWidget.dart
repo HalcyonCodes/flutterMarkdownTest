@@ -12,7 +12,7 @@ class BlockQuoteWidget extends StatelessWidget {
   //bool isFirst;
   bool isInQuote;
   bool isOnlyQuote;
-  bool lastIsP;
+  String lastTag;
   bool isInList;
   bool? hasImg;
   double width;
@@ -25,7 +25,7 @@ class BlockQuoteWidget extends StatelessWidget {
       required this.isEnd,
       required this.isInQuote,
       required this.isOnlyQuote,
-      required this.lastIsP,
+      required this.lastTag,
       required this.isInList,
       required this.width}) {
     if (quoteColor == null) {
@@ -46,7 +46,10 @@ class BlockQuoteWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.only(
-            left: 0, right: 0, top: lastIsP ? 16 : 0, bottom: isEnd ? 0 : 16),
+            left: 0,
+            right: 0,
+            top: lastTag == 'p' ? 16 : 0,
+            bottom: isEnd ? 0 : 16),
         padding: EdgeInsets.only(
             left: 20,
             right: 15,
@@ -69,8 +72,7 @@ class BlockQuoteWidget extends StatelessWidget {
             );
             quote.visit(e.children);
             List<Widget> widgets = quote.widgetsTemp;
-            hasImg = quote.hasImg!;
-            
+
             //hasImg = true;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,7 +86,7 @@ class BlockQuoteWidget extends StatelessWidget {
 
 class QuoteNodeVisitor implements md.NodeVisitor {
   StyleSheet st;
-  String? lastTag;
+  String lastTag = 'start';
   List<Widget> widgetsTemp = [];
   double width;
   List<md.Node> nodes = [];
@@ -92,7 +94,7 @@ class QuoteNodeVisitor implements md.NodeVisitor {
   bool lastIsP = false;
   bool isInList;
 
-  bool? hasImg;
+  bool? hasImg = false;
 
   QuoteNodeVisitor({
     required this.st,
@@ -143,10 +145,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg;
+          if (hasImg == false) hasImg = textWidget.hasImg;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = true;
         }
         break;
       case 'h1':
@@ -168,10 +169,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'h2':
@@ -193,10 +193,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'h3':
@@ -218,10 +217,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'h4':
@@ -243,10 +241,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'h5':
@@ -268,10 +265,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'h6':
@@ -294,10 +290,9 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             isInList: isInList,
           );
-          hasImg = textWidget.hasImg!;
+          if (hasImg == false) hasImg = textWidget.hasImg!;
           widgetsTemp.add(textWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'ul':
@@ -317,10 +312,10 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             width: width,
             isInQuote: true,
             isEnd: isEnd,
+            lastTag: lastTag,
           );
-          hasImg = listWidget.hasImg!;
+          if (hasImg == false) hasImg = listWidget.hasImg!;
           widgetsTemp.add(listWidget);
-          lastIsP = false;
           lastTag = e.tag;
           //
         }
@@ -346,15 +341,17 @@ class QuoteNodeVisitor implements md.NodeVisitor {
             isInQuote: true,
             //quoteColor: Color.from,
             isOnlyQuote: isOnlyQuote,
-            lastIsP: lastIsP,
+            lastTag: lastTag,
             isInList: isInList,
             width: width,
           );
-          hasImg = blockQuoteWidget.hasImg!;
+          if (hasImg == false) hasImg = blockQuoteWidget.hasImg!;
           widgetsTemp.add(blockQuoteWidget);
-          lastIsP = false;
           lastTag = e.tag;
         }
+        break;
+      default:
+        {}
     }
   }
 }

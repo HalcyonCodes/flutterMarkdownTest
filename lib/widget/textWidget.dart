@@ -376,6 +376,7 @@ class TextNodeVisitor implements md.NodeVisitor {
             st.fatherTextStyle = fatherStyleTemp;
           }
           String url = vistor.node!.attributes['src'].toString();
+          hasImg = true;
           rowWidgets.add(ImgWidget(
             url: url,
             clickUrl: clickUrl,

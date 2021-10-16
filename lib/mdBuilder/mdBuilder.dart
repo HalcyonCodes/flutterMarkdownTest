@@ -14,7 +14,7 @@ class MdBuilder implements md.NodeVisitor {
   List<md.Node>? astNodes;
   List<Widget> bWidgets = [];
   StyleSheet? styleSheet;
-  String? lastTag;
+  String lastTag = 'start';
   bool lastIsP = false;
 
   MdBuilder({required this.width, required this.data}) {
@@ -63,7 +63,7 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
+
         }
         break;
       case 'h1':
@@ -82,7 +82,7 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
+
         }
         break;
       case 'h2':
@@ -101,7 +101,6 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
         }
         break;
       case 'h3':
@@ -120,7 +119,6 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
         }
         break;
       case 'h4':
@@ -139,7 +137,6 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
         }
         break;
       case 'h5':
@@ -158,7 +155,6 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
         }
         break;
       case 'h6':
@@ -177,7 +173,6 @@ class MdBuilder implements md.NodeVisitor {
           );
           bWidgets.add(textWidget);
           lastTag = e.tag;
-          lastIsP = lastTag == 'p' ? true : false;
         }
         break;
       case 'ul':
@@ -191,12 +186,12 @@ class MdBuilder implements md.NodeVisitor {
             st: styleSheet!,
             isFirst: isFirst,
             width: width,
-            isInQuote: true,
+            isInQuote: false,
             isEnd: isEnd,
+            lastTag: lastTag,
           );
           bWidgets.add(listWidget);
           lastTag = e.tag;
-          lastIsP = false;
         }
         break;
       case 'blockquote':
@@ -219,7 +214,7 @@ class MdBuilder implements md.NodeVisitor {
             isEnd: true,
             isInQuote: false,
             isOnlyQuote: isOnlyQuote,
-            lastIsP: lastIsP,
+            lastTag: lastTag,
             //quoteColor: Color.from,
             isInList: false,
             width: width,

@@ -13,12 +13,13 @@ class ListWidget extends StatelessWidget {
     required this.isFirst,
     required this.isInQuote,
     required this.isEnd,
+    required this.lastTag,
   }) {
     hasImg = false;
     ListNodeVisitor lVisitor = ListNodeVisitor();
     lVisitor.visitStar(e);
     map = lVisitor.map; //忽略'_0_'
-    hasImg = DetermineImg();
+    hasImg = determineImg();
   }
 
   md.Element e;
@@ -31,8 +32,9 @@ class ListWidget extends StatelessWidget {
   double width;
   bool? hasImg;
   List<Widget> widgets = [];
+  String? lastTag;
 
-  bool DetermineImg() {
+  bool determineImg() {
     DecorationVisitor dVisiter = DecorationVisitor();
     bool hasImg;
     bool result = false;
@@ -63,9 +65,9 @@ class ListWidget extends StatelessWidget {
           e: dVisiter.dve!,
           st: st,
           isEnd: isEnd,
-          isInQuote: false,
-          isOnlyQuote: false,
-          lastIsP: false,
+          isInQuote: true,
+          isOnlyQuote: true,
+          lastTag: 'start',
           isInList: true,
           width: width, //change
         );
@@ -91,7 +93,7 @@ class ListWidget extends StatelessWidget {
 
     int mapCount = map!.length;
     int currentMapCount = 0;
-    String lastTag = 'p';
+    String lastTag = 'start';
 
     double quoteWidth = width;
 
@@ -629,50 +631,54 @@ class ListWidget extends StatelessWidget {
         int i = 0;
         while (i == 0) {
           devEle.children![0].accept(dotHeightVisiter);
-          switch (dotHeightVisiter.dve!.tag) {
-            case 'p':
-              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h1':
-              dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h2':
-              dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h3':
-              dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h4':
-              dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h5':
-              dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h6':
-              dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'img':
-              hasImg = true;
-              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            default:
-              devEle = dotHeightVisiter.dve!;
-              break;
+          if (dotHeightVisiter.dve == null) {
+            dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+            i = 1;
+          } else {
+            switch (dotHeightVisiter.dve!.tag) {
+              case 'p':
+                dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h1':
+                dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h2':
+                dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h3':
+                dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h4':
+                dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h5':
+                dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h6':
+                dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'img':
+                hasImg = true;
+                dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              default:
+                devEle = dotHeightVisiter.dve!;
+                break;
+            }
           }
         }
-
         WidgetSpan dHeight = WidgetSpan(
           baseline: TextBaseline.alphabetic,
           alignment: PlaceholderAlignment.baseline,
-          child: Text('\r\n', style: dotHeight(value, dotHeightVisiter)),
+          child: Text('\r\n', style: dotStyle),
         );
         rowTemp.add(dHeight);
         bool isEnd = false;
@@ -683,7 +689,7 @@ class ListWidget extends StatelessWidget {
           isEnd: isEnd,
           isInQuote: false,
           isOnlyQuote: false,
-          lastIsP: false,
+          lastTag: 'start',
           isInList: false,
           width: quoteWidth, //change
         );
@@ -722,12 +728,14 @@ class ListWidget extends StatelessWidget {
             ),
           ],
         );
+        lastTag = 'blockquote';
       } else {
         decorationWidget = row;
         lastTag = 'p';
       }
 
       widgets.add(decorationWidget);
+
       currentMapCount++;
     });
   }
@@ -741,7 +749,8 @@ class ListWidget extends StatelessWidget {
           d.dve!.tag == 'h3' ||
           d.dve!.tag == 'h4' ||
           d.dve!.tag == 'h5' ||
-          d.dve!.tag == 'h6') {
+          d.dve!.tag == 'h6' ||
+          d.dve!.tag == 'p') {
         return false;
       } else {
         return true;
@@ -756,43 +765,77 @@ class ListWidget extends StatelessWidget {
     if (value.children != null) {
       value.children![0].accept(dotHeightVisiter);
       if (dotHeightVisiter.dve != null) {
-        //tagTemp = dVisiter.dve!.tag;
-        // md.Element devEle = dotHeightVisiter.dve!;
+        switch (dotHeightVisiter.dve!.tag) {
+          case 'p':
+            dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h1':
+            dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h2':
+            dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h3':
+            dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h4':
+            dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h5':
+            dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'h6':
+            dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          case 'pre':
+            dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+            return dotStyle;
+          default:
+        }
         int i = 0;
         while (i == 0) {
           value.children![0].accept(dotHeightVisiter);
-          switch (dotHeightVisiter.dve!.tag) {
-            case 'p':
-              dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h1':
-              dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h2':
-              dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h3':
-              dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h4':
-              dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h5':
-              dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            case 'h6':
-              dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
-              i = 1;
-              break;
-            default:
-              value = dotHeightVisiter.dve!;
-              break;
+          if (dotHeightVisiter.dve != null) {
+            dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+            i = 1;
+          } else {
+            switch (dotHeightVisiter.dve!.tag) {
+              case 'p':
+                dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h1':
+                dotStyle = st.h1.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h2':
+                dotStyle = st.h2.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h3':
+                dotStyle = st.h3.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h4':
+                dotStyle = st.h4.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h5':
+                dotStyle = st.h5.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'h6':
+                dotStyle = st.h6.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              case 'pre':
+                dotStyle = st.normalStyle.copyWith(fontStyle: FontStyle.italic);
+                i = 1;
+                break;
+              default:
+                value = dotHeightVisiter.dve!;
+                break;
+            }
           }
         }
       } else {
@@ -910,12 +953,16 @@ class ListWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            if (lastTag == 'p')
+              SizedBox(
+                height: 6,
+              ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: widgets,
             ),
-            if (isEnd)
+            if (!isEnd)
               SizedBox(
                 height: 16,
               )
